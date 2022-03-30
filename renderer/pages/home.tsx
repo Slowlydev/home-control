@@ -15,7 +15,6 @@ function Home() {
             <a>Go to next page</a>
           </Link>
         </p>
-        <img src="/images/logo.png" />
       </div>
     </React.Fragment>
   );
