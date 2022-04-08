@@ -1,38 +1,43 @@
-<p align="center"><img src="https://i.imgur.com/NZfsD1p.png"></p>
+# home-control
+A nextron / electron app to control your hue smarthome.
 
-## Usage
+Made with:
 
-### Create an App
+- nextron
+- electron
+- nextjs
+- framer-motion
+- swr
+- axios
 
-```
-# with npx
-$ npx create-nextron-app my-app --example with-typescript
-
-# with yarn
-$ yarn create nextron-app my-app --example with-typescript
-
-# with pnpx
-$ pnpx create-nextron-app my-app --example with-typescript
-```
+## Setup
 
 ### Install Dependencies
 
 ```
-$ cd my-app
+# open repository
+$ cd home-control
 
-# using yarn or npm
-$ yarn (or `npm install`)
-
-# using pnpm
-$ pnpm install --shamefully-hoist
+# install dependencies with yarn
+$ yarn
 ```
 
 ### Use it
 
 ```
 # development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
+$ yarn dev
 
 # production build
-$ yarn build (or `npm run build` or `pnpm run build`)
+$ yarn build 
 ```
+
+## Conventions
+
+### Imports
+
+1. packages
+2. styles
+3. services
+4. components
+5. interfaces
