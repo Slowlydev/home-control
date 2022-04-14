@@ -1,8 +1,11 @@
 import { app } from 'electron';
 import serve from 'electron-serve';
+import Store from 'electron-store';
 import { createWindow } from './helpers';
 
 const isProd: boolean = process.env.NODE_ENV === 'production';
+
+const store = new Store();
 
 if (isProd) {
   serve({ directory: 'app' });
@@ -19,10 +22,23 @@ if (isProd) {
   });
 
   if (isProd) {
-    await mainWindow.loadURL('app://./home.html');
+
+
+    if (store.get("bridge") && store.get("token")) {
+      await mainWindow.loadURL('app://./home.html');
+    } else {
+      await mainWindow.loadURL('app://./setup.html');
+    }
+
   } else {
     const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/setup`);
+
+    if (store.get("bridge") && store.get("token")) {
+      await mainWindow.loadURL(`http://localhost:${port}/home`);
+    } else {
+      await mainWindow.loadURL(`http://localhost:${port}/setup`);
+    }
+
     mainWindow.webContents.openDevTools();
   }
 })();
