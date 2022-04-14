@@ -3,8 +3,10 @@ $foreground: #262626;
 
 .card {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+
+  gap: 10px;
 
   height: fit-content;
   width: fit-content;
@@ -13,4 +15,14 @@ $foreground: #262626;
 
   border-radius: 1rem;
   background-color: $foreground;
+
+  cursor: pointer;
+
+  p {
+    margin: 0;
+  }
+
+  .brightness {
+    opacity: 0.5;
+  }
 }
