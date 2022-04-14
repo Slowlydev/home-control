@@ -1,6 +1,6 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.slowlydev.home-control
+productName: home-control
+copyright: Copyright © 2022 Joel Scheffmann
 directories:
   output: dist
   buildResources: resources
