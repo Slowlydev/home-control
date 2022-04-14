@@ -1,21 +1,23 @@
-import nookies from "nookies";
+import Store from "electron-store";
 import axios from "axios";
 
 import ClinetKeyInterface from "../interfaces/ClientKeyInterface";
 
+const store = new Store();
+
 async function getBridgeInfo(): Promise<any> {
-	const bridge = JSON.parse(nookies.get(null).bridge);
-	if (bridge.internalipaddress) {
-		return axios.get(`http://${bridge.internalipaddress}/clip/v2/resource/device`).then(res => res.data);
+	const bridge = store.get("bridge");
+	if (bridge) {
+		return axios.get(`http://${bridge}/clip/v2/resource/device`).then(res => res.data);
 	} else {
 		throw new Error("Could not get bridge info");
 	}
 }
 
 async function createClientKey(): Promise<{ success: ClinetKeyInterface }[]> {
-	const bridge = JSON.parse(nookies.get(null).bridge);
-	if (bridge.internalipaddress) {
-		return axios.post(`http://${bridge.internalipaddress}/api`, { "devicetype": "home-control#development", "generateclientkey": true }).then(res => res.data);
+	const bridge = store.get("bridge");
+	if (bridge) {
+		return axios.post(`http://${bridge}/api`, { "devicetype": "home-control#development", "generateclientkey": true }).then(res => res.data);
 	} else {
 		throw new Error("Could not get bridge info");
 	}
