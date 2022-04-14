@@ -1,4 +1,4 @@
-export default interface Light {
+export default interface LightInterface {
 	id: string,
 	state: {
 		on: boolean,
@@ -16,12 +16,13 @@ export default interface Light {
 	capabilities: {
 		certified: boolean
 		control: {
-			mindimlevel: number,
 			maxlumen: number,
-			ct: {
+			mindimlevel?: number,
+			ct?: {
 				min: number,
 				max: number
-			}
+			},
+			colorgamut?: number[][],
 		},
 		streaming: {
 			renderer: boolean,
