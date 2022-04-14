@@ -55,7 +55,7 @@ async function getDetailedScenes(): Promise<SceneInterface[]> {
 	const resultScenes = [];
 
 	await Promise.all([
-		Object.keys(data).map((key) => getScene(key).then((result) => resultScenes.push(result)))
+		Object.keys(data).map((key) => getScene(key).then((result) => resultScenes.push({ ...result, id: key })))
 	]);
 
 	return resultScenes;
