@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./Toggle.module.scss";
 
@@ -12,7 +12,16 @@ export default function Toggle({ value, callback }: Props) {
 
 	const [isOn, setIsOn] = useState(value ? value : false);
 
-	const toggleSwitch = () => { setIsOn(!isOn); callback(!isOn) };
+	function toggleSwitch(event: any) {
+		event.stopPropagation();
+
+		setIsOn(!isOn);
+		callback(!isOn);
+	};
+
+	useEffect(() => {
+		setIsOn(value);
+	}, [value]);
 
 	return (
 		<div className={styles.switch} data-ison={isOn} onClick={toggleSwitch}>
