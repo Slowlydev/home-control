@@ -1,5 +1,5 @@
 import { useState } from "react";
-import nookies from "nookies";
+import Store from "electron-store";
 import Link from "next/link";
 import useSWR from "swr";
 
@@ -8,10 +8,12 @@ import styles from "./setup.module.scss";
 import discoveryService from "../services/discovery.service";
 import bridgeService from "../services/bridge.service";
 
-import DiscoverdBidgeInterface from "../interfaces/DiscoveredBidgeInterface";
-
 import BridgeStatus from "../components/BridgeStatus/BridgeStatus";
 import Button from "../components/Button/Button";
+
+import DiscoverdBidgeInterface from "../interfaces/DiscoveredBidgeInterface";
+
+const store = new Store();
 
 export default function Setup() {
 	const { data, mutate } = useSWR<DiscoverdBidgeInterface[]>("discovery", discoveryService.discoverBidge);
@@ -26,7 +28,8 @@ export default function Setup() {
 		async function linkWithBridge() {
 			const data = await bridgeService.createClientKey();
 			if (data[0].success) {
-				nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
+				//nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
+				store.set("token", data[0].success.username);
 				setHasClientKey(true);
 				clearInterval(interval);
 			}
@@ -60,15 +63,20 @@ export default function Setup() {
 						) : (
 							<p>No bridges were found!</p>
 						)}
-						<Link href="/home">
-							<a>
-								<Button>Leave Setup</Button>
-							</a>
-						</Link>
-						<Button onClick={() => mutate(discoveryService.discoverBidge)}>Reload</Button>
-						{selectedBridge && (
-							<Button onClick={() => { setStep(step + 1); nookies.set(null, "bridge", selectedBridge.internalipaddress, { maxAge: 12 * 30 * 24 * 60 * 60, }) }}>Next Step</Button>
-						)}
+
+						<div className={styles.buttonContainer}>
+							<Link href="/home">
+								<a>
+									<Button>Leave Setup</Button>
+								</a>
+							</Link>
+							<Button onClick={() => mutate(discoveryService.discoverBidge)}>Reload</Button>
+
+							{selectedBridge && (
+								<Button onClick={() => { setStep(step + 1); store.set("bridge", selectedBridge.internalipaddress) }}>Next Step</Button>
+							)}
+						</div>
+
 					</div>
 				)}
 
