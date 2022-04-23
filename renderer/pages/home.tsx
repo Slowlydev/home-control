@@ -1,4 +1,4 @@
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import Store from "electron-store";
 import tinycolor from "tinycolor2";
@@ -24,7 +24,7 @@ import SceneInterface from "../interfaces/SceneInterface";
 import convertToRGB from "../lib/convertToRGB";
 import convertToCIE from "../lib/convertToCIE";
 import { hasCT, hasDimming, hasRGB } from "../lib/lightCapabilities";
-import { bitsToPercent, decimalToBits } from "../lib/numberConverter";
+import { bitsToDecimal, decimalToBits } from "../lib/numberConverter";
 
 const store = new Store();
 
@@ -39,6 +39,7 @@ export default function Home() {
 	const [previewColor, setPreviewColor] = useState<null | tinycolor.ColorFormats.RGBA>(null);
 
 	const [color, setColor] = useState<null | tinycolor.ColorFormats.RGBA>(null);
+	const [brightness, setBrightness] = useState<null | number>(null);
 	const [temperature, setTerperature] = useState<null | number>(null);
 
 	const scenesToHide = store.get("hiddenScenes") as string[] || [];
@@ -55,13 +56,11 @@ export default function Home() {
 	function updateTemperature(number: number) {
 		const min = lightsData[selectedLight].capabilities.control.ct.min;
 		const max = lightsData[selectedLight].capabilities.control.ct.max;
-		const currentValue = bitsToPercent(number);
-
-		const claculations = min + (currentValue / 100) * (max - min);
+		const calclations = min + (number / 100) * (max - min);
 
 		devicesService.updateLight(lightsData[selectedLight].id, {
 			on: true,
-			ct: Math.floor(claculations),
+			ct: Math.floor(calclations),
 		});
 
 		mutate("lights", devicesService.getLights);
@@ -81,37 +80,21 @@ export default function Home() {
 
 		if (hasRGB(light)) {
 			setColor({ ...convertToRGB(light.state.xy[0], light.state.xy[1]), a: 1 });
+		} else {
+			setColor(null);
 		}
 
 		if (hasDimming(light)) {
-			setColor({ r: 245, g: 197, b: 66, a: decimalToBits(light.state.bri) })
+			setBrightness(bitsToDecimal(light.state.bri));
+		} else {
+			setBrightness(null);
 		}
 
 		if (hasCT(light)) { // not implemented
-
 			setTerperature(50);
+		} else {
+			setTerperature(null);
 		}
-
-		console.log(temperature, color);
-	}
-
-	function previewUpdate(type: string, color: tinycolor.ColorFormats.RGBA) {
-
-		switch (type) {
-			case "hs":
-			case "xy": {
-				setPreviewColor(color);
-				setColor(color);
-				break;
-			}
-			case "ct": {
-
-			}
-			case "homeautomation": {
-
-			}
-		}
-
 	}
 
 	return (
@@ -176,7 +159,8 @@ export default function Home() {
 								{hasDimming(lightsData[selectedLight]) && (
 									<BrightnessPicker
 										color={color}
-										onChange={(decimalNumber) => setColor({ ...color, a: decimalNumber })}
+										brightness={brightness}
+										onChange={(decimalNumber) => setBrightness(decimalNumber)}
 										onChangeDebounced={(decimalNumber) => updateBrightness(decimalNumber)}
 									/>
 								)}
