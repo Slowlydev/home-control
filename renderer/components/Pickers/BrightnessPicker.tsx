@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDebouncyEffect } from "use-debouncy";
+import tinycolor from "tinycolor2";
 
 import { ColorSlider } from "@react-spectrum/color";
 import { Color } from "@react-types/color";
@@ -8,29 +9,37 @@ import { SSRProvider } from '@react-aria/ssr'
 import { Provider } from '@react-spectrum/provider'
 import { theme } from "@react-spectrum/theme-default"
 import { parseColor } from "@react-stately/color";
-import tinycolor from "tinycolor2";
+
+import { preParse } from "../../lib/preParse";
 
 interface BrightnessPickerProps {
-	color: tinycolor.ColorFormats.RGBA,
+	color?: tinycolor.ColorFormats.RGBA,
+	brightness: number,
 	onChange?: (value: number) => void,
 	onChangeDebounced?: (value: number) => void,
 }
 
-export default function BrightnessPicker({ color, onChange, onChangeDebounced }: BrightnessPickerProps) {
+export default function BrightnessPicker({ color, brightness, onChange, onChangeDebounced }: BrightnessPickerProps) {
 
-	const [currentColor, setCurrentColor] = useState<Color>(parseColor(tinycolor(color).toHexString())); // init slider with colors
+	// IMPORTANT: always strip the alpha of the new color recived 
 
-	useEffect(() => setCurrentColor(parseColor(tinycolor(color).toHexString())), [color]); // listen for color prop updates
+	const [currentColor, setCurrentColor] = useState<Color>(parseColor(preParse(color ? { ...color, a: brightness } : { r: 245, g: 197, b: 66, a: brightness }))); // init slider with colors
+	const [currentBrightness, setCurrentBrightness] = useState<number>(brightness);
+
+	if (color !== null) {
+		useEffect(() => setCurrentColor(parseColor(preParse({ ...color, a: currentBrightness }))), [color]); // listen for color prop updates
+	}
 
 	if (onChange !== undefined) {
-		useEffect(() => onChange(numberFormatter(currentColor)), [currentColor]) // instant update
+		useEffect(() => onChange(currentBrightness), [currentBrightness]) // instant update
 	}
 	if (onChangeDebounced !== undefined) {
-		useDebouncyEffect(() => onChangeDebounced(numberFormatter(currentColor)), 200, [currentColor]); // debounce update
+		useDebouncyEffect(() => onChangeDebounced(currentBrightness), 200, [currentBrightness]); // debounce update
 	}
 
-	function numberFormatter(colorNew: Color): number {
-		return colorNew.getChannelValue("alpha") // format Color to decimal
+	function customChange(color: Color) {
+		setCurrentBrightness(color.getChannelValue("alpha")); // this toggles the onChange events
+		setCurrentColor(color); // this is a ref for the picker
 	}
 
 	return (
@@ -40,7 +49,7 @@ export default function BrightnessPicker({ color, onChange, onChangeDebounced }:
 					label="Brightness"
 					channel="alpha"
 					value={currentColor}
-					onChange={setCurrentColor}
+					onChange={customChange}
 				/>
 			</Provider>
 		</SSRProvider>
