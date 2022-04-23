@@ -9,7 +9,7 @@ function hasCT(light: LightInterface) {
 }
 
 function hasDimming(light: LightInterface) {
-	return !!light.capabilities.control.mindimlevel;
+	return light.state.bri !== undefined;
 }
 
 export {

@@ -1,11 +1,14 @@
 import { useState } from "react";
 import tinycolor from "tinycolor2";
+import Store from "electron-store";
 
 import styles from "./SceneCard.module.scss";
 
 import convertToRGB from "../../lib/convertToRGB";
 
 import SceneInterface from "../../interfaces/SceneInterface";
+
+const store = new Store();
 
 interface Props {
 	scene: SceneInterface,
@@ -15,7 +18,13 @@ interface Props {
 
 export default function SceneCard({ scene, edit }: Props) {
 
+	function checkIfHidden() {
+		const hiddenScenes: string[] = store.get("hiddenScenes") as string[] || [];
+		return hiddenScenes.includes(scene.id);
+	}
+
 	const [hasColors, setHasColors] = useState(false);
+	const [isCurrentlyHidden, setIsCurrentlyHidden] = useState(checkIfHidden());
 
 	const colors: string[] = [];
 
@@ -28,11 +37,26 @@ export default function SceneCard({ scene, edit }: Props) {
 
 	const gradient = `linear-gradient(to right, ${colors.join(', ')})`
 
+	function addToList() {
+		setIsCurrentlyHidden(true);
+		const hiddenScenes: string[] = store.get("hiddenScenes") as string[] || [];
+		hiddenScenes.push(scene.id);
+		store.set("hiddenScenes", hiddenScenes);
+	}
+
+	function removeFromList() {
+		setIsCurrentlyHidden(false);
+		const hiddenScenes: string[] = store.get("hiddenScenes") as string[];
+		const index: number = hiddenScenes.findIndex((stringToCheck) => stringToCheck === scene.id);
+		hiddenScenes.splice(index, 1);
+		store.set("hiddenScenes", hiddenScenes);
+	}
+
 	return (
-		<div className={styles.card}>
+		<div className={styles.card} style={{ cursor: edit ? 'default' : 'pointer' }}>
 			{hasColors && (<div className={styles.light} style={{ backgroundImage: gradient }} />)}
 			<p>{scene.name}</p>
-			{edit && (<input type="checkbox" />)}
+			{edit && (<input type="checkbox" checked={isCurrentlyHidden} onChange={(event) => event.target.checked ? addToList() : removeFromList()} />)}
 		</div>
 	)
 }

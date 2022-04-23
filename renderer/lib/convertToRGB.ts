@@ -6,7 +6,7 @@
  * @param {Number} brightness - Ranges from 1 to 254
  * @return {Array} Array that contains the color values for red, green and blue
  */
-export default function convertToRGB(x, y, brightness) {
+export default function convertToRGB(x, y, brightness?) {
 	//Set to maximum brightness if no custom value was given (Not the slick ECMAScript 6 way for compatibility reasons)
 	if (brightness === undefined) {
 		brightness = 254;

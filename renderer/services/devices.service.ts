@@ -52,13 +52,13 @@ async function getScene(id: string): Promise<SceneInterface> {
 async function getDetailedScenes(): Promise<SceneInterface[]> {
 	const { data } = await httpRequest.get("/scenes");
 
-	const resultScenes = [];
+	const promises = Object.keys(data).map((key) => {
+		return getScene(key).then((result) => {
+			return { ...result, id: key }
+		})
+	})
 
-	await Promise.all([
-		Object.keys(data).map((key) => getScene(key).then((result) => resultScenes.push({ ...result, id: key })))
-	]);
-
-	return resultScenes;
+	return await Promise.all(promises);
 }
 
 export default {

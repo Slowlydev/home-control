@@ -1,37 +1,208 @@
-import Link from "next/link";
-import React from "react";
-import useSWR from "swr";
+import { AnimatePresence, m } from "framer-motion";
+import React, { useState } from "react";
+import Store from "electron-store";
+import tinycolor from "tinycolor2";
+import useSWR, { mutate } from "swr";
 
 import styles from "./home.module.scss"
 
 import devicesService from "../services/devices.service";
 
+import Light from "../components/Light/Light";
+import Modal from "../components/Modal/Modal";
 import LightCard from "../components/LightCard/LightCard";
+import SceneCard from "../components/SceneCard/SceneCard";
+import SettingsHeader from "../components/SettingsHeader/SettingsHeader";
+import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import ColorPicker from "../components/Pickers/ColorPicker";
+import BrightnessPicker from "../components/Pickers/BrightnessPicker";
+import TemperaturePicker from "../components/Pickers/TemperaturePicker";
 
-import Light from "../interfaces/Light";
+import LightInterface from "../interfaces/LightInterface";
+import SceneInterface from "../interfaces/SceneInterface";
+
+import convertToRGB from "../lib/convertToRGB";
+import convertToCIE from "../lib/convertToCIE";
+import { hasCT, hasDimming, hasRGB } from "../lib/lightCapabilities";
+import { bitsToPercent, decimalToBits } from "../lib/numberConverter";
+
+const store = new Store();
 
 export default function Home() {
-	const { data: lightsData } = useSWR("devices", devicesService.getLights);
+	const { data: lightsData, isValidating: lightsDataLoading } = useSWR("lights", devicesService.getLights);
+	const { data: scenesData, isValidating: scenesDataLoading } = useSWR("scenes", devicesService.getDetailedScenes);
+
+	const [scenesOpen, setScenesOpen] = useState(false);
+
+	const [selectedLight, setSelectedLight] = useState<null | number>(null);
+
+	const [previewColor, setPreviewColor] = useState<null | tinycolor.ColorFormats.RGBA>(null);
+
+	const [color, setColor] = useState<null | tinycolor.ColorFormats.RGBA>(null);
+	const [temperature, setTerperature] = useState<null | number>(null);
+
+	const scenesToHide = store.get("hiddenScenes") as string[] || [];
+
+	function updateColor(color: tinycolor.ColorFormats.RGBA) {
+		devicesService.updateLight(lightsData[selectedLight].id, {
+			on: true,
+			xy: convertToCIE(color.r, color.g, color.b),
+		});
+
+		mutate("lights", devicesService.getLights);
+	}
+
+	function updateTemperature(number: number) {
+		const min = lightsData[selectedLight].capabilities.control.ct.min;
+		const max = lightsData[selectedLight].capabilities.control.ct.max;
+		const currentValue = bitsToPercent(number);
+
+		const claculations = min + (currentValue / 100) * (max - min);
+
+		devicesService.updateLight(lightsData[selectedLight].id, {
+			on: true,
+			ct: Math.floor(claculations),
+		});
+
+		mutate("lights", devicesService.getLights);
+	}
+
+	function updateBrightness(number: number) {
+		devicesService.updateLight(lightsData[selectedLight].id, {
+			on: true,
+			bri: decimalToBits(number)
+		});
+
+		mutate("lights", devicesService.getLights);
+	}
+
+	function initializeColor(index: number, light: LightInterface) {
+		setSelectedLight(index);
+
+		if (hasRGB(light)) {
+			setColor({ ...convertToRGB(light.state.xy[0], light.state.xy[1]), a: 1 });
+		}
+
+		if (hasDimming(light)) {
+			setColor({ r: 245, g: 197, b: 66, a: decimalToBits(light.state.bri) })
+		}
+
+		if (hasCT(light)) { // not implemented
+
+			setTerperature(50);
+		}
+
+		console.log(temperature, color);
+	}
+
+	function previewUpdate(type: string, color: tinycolor.ColorFormats.RGBA) {
+
+		switch (type) {
+			case "hs":
+			case "xy": {
+				setPreviewColor(color);
+				setColor(color);
+				break;
+			}
+			case "ct": {
+
+			}
+			case "homeautomation": {
+
+			}
+		}
+
+	}
 
 	return (
 		<React.Fragment>
 			<div className={styles.container}>
-				<h1>Home</h1>
+				<SettingsHeader level={1}>Home</SettingsHeader>
 
-				<h2>Scenes</h2>
+				<div className={styles.row}>
+					<SettingsHeader level={2} onClick={() => setScenesOpen(true)} >Scenes</SettingsHeader>
+					{scenesDataLoading && (<LoadingSpinner />)}
+				</div>
 
-				<h2>Lights</h2>
-				{lightsData !== undefined && (
-					<div className={styles.devices}>
-						{lightsData.map((light: Light) => (
-							<LightCard light={light} />
+				{scenesData !== undefined && (
+					<div className={styles.scenes}>
+						{scenesData.filter((sceneToHide: SceneInterface) => !scenesToHide.includes(sceneToHide.id)).map((scene: SceneInterface, index: number) => (
+							<SceneCard scene={scene} key={`scene.${index}.${scene.id}`} />
 						))}
 					</div>
 				)}
 
-				<Link href="/setup">Settings</Link>
+				<div className={styles.row}>
+					<SettingsHeader level={2}>Lights</SettingsHeader>
+					{lightsDataLoading && (<LoadingSpinner />)}
+				</div>
 
+				{lightsData !== undefined && (
+					<div className={styles.lights}>
+						{lightsData.map((light: LightInterface, index: number) => (
+							<div onClick={() => initializeColor(index, light)} key={`light.${index}.${light.id}`}>
+								<LightCard light={light} />
+							</div>
+						))}
+					</div>
+				)}
 			</div>
-		</React.Fragment>
+
+			<AnimatePresence>
+				{selectedLight !== null && (
+					<Modal close={() => setSelectedLight(null)} >
+						<div className={styles.modalContainer}>
+							<div className={styles.modalHeader}>
+								<Light isOn={lightsData[selectedLight].state.on} color={tinycolor(previewColor).toHexString()} />
+								<h1>{lightsData[selectedLight].name}</h1>
+								{lightsDataLoading && (<LoadingSpinner />)}
+							</div>
+
+							<div className={styles.pickerWrapper}>
+								{hasRGB(lightsData[selectedLight]) && (
+									<ColorPicker
+										color={color}
+										onChange={(color) => setColor(color)}
+										onChangeDebounced={(color) => updateColor(color)} />
+								)}
+
+								{hasCT(lightsData[selectedLight]) && (
+									<TemperaturePicker
+										teperature={temperature}
+										onChange={(bitsValue) => setTerperature(bitsValue)}
+										onChangeDebounced={(bitsValue) => updateTemperature(bitsValue)} />
+								)}
+
+								{hasDimming(lightsData[selectedLight]) && (
+									<BrightnessPicker
+										color={color}
+										onChange={(decimalNumber) => setColor({ ...color, a: decimalNumber })}
+										onChangeDebounced={(decimalNumber) => updateBrightness(decimalNumber)}
+									/>
+								)}
+							</div>
+						</div>
+					</Modal>
+				)}
+			</AnimatePresence>
+
+			<AnimatePresence>
+				{scenesOpen && (
+					<Modal close={() => setScenesOpen(false)} >
+						<div className={styles.modalContainer}>
+							<h1>Edit Scenes View</h1>
+
+							{scenesData !== undefined && (
+								<div className={styles.scenes}>
+									{scenesData.map((scene: SceneInterface, index: number) => (
+										<SceneCard scene={scene} key={`scene.${index}.${scene.id}`} edit onHide={() => { }} />
+									))}
+								</div>
+							)}
+						</div>
+					</Modal>
+				)}
+			</AnimatePresence>
+		</React.Fragment >
 	);
 }

@@ -11,12 +11,22 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@react-aria/ssr": "^3.1.2",
+    "@react-spectrum/color": "^3.0.0-beta.10",
+    "@react-spectrum/provider": "^3.3.3",
+    "@react-spectrum/theme-dark": "^3.2.6",
+    "@react-spectrum/theme-default": "^3.2.6",
+    "@react-stately/color": "^3.0.0-beta.9",
+    "@react-types/color": "^3.0.0-beta.7",
+    "add": "^2.0.6",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "https": "^1.0.0",
+    "next-transpile-modules": "^9.0.0",
     "react-colorful": "^5.5.1",
     "tinycolor2": "^1.4.2",
-    "use-debouncy": "^4.3.0"
+    "use-debouncy": "^4.3.0",
+    "yarn": "^1.22.18"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
