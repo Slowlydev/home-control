@@ -7,6 +7,7 @@ import styles from "./SceneCard.module.scss";
 import convertToRGB from "../../lib/convertToRGB";
 
 import SceneInterface from "../../interfaces/SceneInterface";
+import scenesService from "../../services/scenes.service";
 
 const store = new Store();
 
@@ -52,8 +53,12 @@ export default function SceneCard({ scene, edit }: Props) {
 		store.set("hiddenScenes", hiddenScenes);
 	}
 
+	function setScene() {
+		scenesService.setScene(scene.group, scene.id);
+	}
+
 	return (
-		<div className={styles.card} style={{ cursor: edit ? 'default' : 'pointer' }}>
+		<div className={styles.card} style={{ cursor: edit ? 'default' : 'pointer' }} onClick={() => !edit ? setScene() : void 0}>
 			{hasColors && (<div className={styles.light} style={{ backgroundImage: gradient }} />)}
 			<p>{scene.name}</p>
 			{edit && (<input type="checkbox" checked={isCurrentlyHidden} onChange={(event) => event.target.checked ? addToList() : removeFromList()} />)}
