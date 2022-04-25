@@ -1,7 +1,6 @@
 import Store from "electron-store";
 import axios from "axios";
 
-import LightInterface from "../interfaces/LightInterface";
 import SceneInterface from "../interfaces/SceneInterface";
 
 const store = new Store();
@@ -9,25 +8,6 @@ const store = new Store();
 const httpRequest = axios.create({
 	baseURL: `http://${store.get('bridge')}/api/${store.get('token')}/`
 });
-
-async function getLights(): Promise<LightInterface[]> {
-	const { data } = await httpRequest.get("/lights");
-
-	const resultLights = [];
-
-	for (const lightObjKey in data) {
-		resultLights.push({
-			...data[lightObjKey],
-			id: lightObjKey,
-		})
-	}
-
-	return resultLights;
-}
-
-async function updateLight(id: string, updatedLight: any) {
-	return httpRequest.put(`lights/${id}/state`, updatedLight).then(res => res.data);
-}
 
 async function getScenes(): Promise<SceneInterface[]> {
 	const { data } = await httpRequest.get("/scenes");
@@ -61,10 +41,14 @@ async function getDetailedScenes(): Promise<SceneInterface[]> {
 	return await Promise.all(promises);
 }
 
+async function setScene(groupId: string, sceneId: string) {
+	const { data } = await httpRequest.put(`groups/${groupId}/action`, { scene: sceneId });
+	return data;
+}
+
 export default {
-	getLights,
-	updateLight,
 	getScenes,
 	getScene,
 	getDetailedScenes,
+	setScene,
 }

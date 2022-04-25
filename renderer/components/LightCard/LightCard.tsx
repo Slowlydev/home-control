@@ -1,16 +1,17 @@
 import { motion } from "framer-motion"
-import { useState } from "react";
 import { mutate } from "swr";
 import tinycolor from "tinycolor2";
 
-import LightInterface from "../../interfaces/LightInterface";
-import convertToRGB from "../../lib/convertToRGB";
-import devicesService from "../../services/devices.service";
-import Light from "../Light/Light";
+import styles from "./LightCard.module.scss";
 
+import devicesService from "../../services/lights.service";
+
+import Light from "../Light/Light";
 import Toggle from "../Toggle/Toggle";
 
-import styles from "./LightCard.module.scss";
+import LightInterface from "../../interfaces/LightInterface";
+
+import convertToRGB from "../../lib/convertToRGB";
 
 interface Props {
 	light: LightInterface,

@@ -6,7 +6,8 @@ import useSWR, { mutate } from "swr";
 
 import styles from "./home.module.scss"
 
-import devicesService from "../services/devices.service";
+import lightsService from "../services/lights.service";
+import scenesService from "../services/scenes.service";
 
 import Light from "../components/Light/Light";
 import Modal from "../components/Modal/Modal";
@@ -30,8 +31,8 @@ import { bitsToDecimal, decimalToBits } from "../lib/numberConverter";
 const store = new Store();
 
 export default function Home() {
-	const { data: lightsData, isValidating: lightsDataLoading } = useSWR("lights", devicesService.getLights);
-	const { data: scenesData, isValidating: scenesDataLoading } = useSWR("scenes", devicesService.getDetailedScenes);
+	const { data: lightsData, isValidating: lightsDataLoading } = useSWR("lights", lightsService.getLights);
+	const { data: scenesData, isValidating: scenesDataLoading } = useSWR("scenes", scenesService.getDetailedScenes);
 
 	const [scenesOpen, setScenesOpen] = useState(false);
 
@@ -46,12 +47,12 @@ export default function Home() {
 	const scenesToHide = store.get("hiddenScenes") as string[] || [];
 
 	function updateColor(color: tinycolor.ColorFormats.RGBA) {
-		devicesService.updateLight(lightsData[selectedLight].id, {
+		lightsService.updateLight(lightsData[selectedLight].id, {
 			on: true,
 			xy: convertToCIE(color.r, color.g, color.b),
 		});
 
-		mutate("lights", devicesService.getLights);
+		mutate("lights", lightsService.getLights);
 	}
 
 	function updateTemperature(number: number) {
@@ -59,21 +60,21 @@ export default function Home() {
 		const max = lightsData[selectedLight].capabilities.control.ct.max;
 		const calclations = min + (number / 100) * (max - min);
 
-		devicesService.updateLight(lightsData[selectedLight].id, {
+		lightsService.updateLight(lightsData[selectedLight].id, {
 			on: true,
 			ct: Math.floor(calclations),
 		});
 
-		mutate("lights", devicesService.getLights);
+		mutate("lights", lightsService.getLights);
 	}
 
 	function updateBrightness(number: number) {
-		devicesService.updateLight(lightsData[selectedLight].id, {
+		lightsService.updateLight(lightsData[selectedLight].id, {
 			on: true,
 			bri: decimalToBits(number)
 		});
 
-		mutate("lights", devicesService.getLights);
+		mutate("lights", lightsService.getLights);
 	}
 
 	function initializeColor(index: number, light: LightInterface) {
