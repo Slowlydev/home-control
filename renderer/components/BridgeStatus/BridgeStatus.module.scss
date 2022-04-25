@@ -42,13 +42,10 @@ $int-green: #24CE65;
 
       border-radius: 50%;
       background-color: $int-green;
-
-      &[data-isoffline="true"] {
-        justify-content: flex-end;
-        background-color: $red;
-      }
     }
 
-    p {}
+    .error {
+      background-color: $red;
+    }
   }
 }
