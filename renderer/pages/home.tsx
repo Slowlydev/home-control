@@ -12,6 +12,7 @@ import Light from "../components/Light/Light";
 import Modal from "../components/Modal/Modal";
 import LightCard from "../components/LightCard/LightCard";
 import SceneCard from "../components/SceneCard/SceneCard";
+import BridgeStatus from "../components/BridgeStatus/BridgeStatus";
 import SettingsHeader from "../components/SettingsHeader/SettingsHeader";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import ColorPicker from "../components/Pickers/ColorPicker";
@@ -80,6 +81,7 @@ export default function Home() {
 
 		if (hasRGB(light)) {
 			setColor({ ...convertToRGB(light.state.xy[0], light.state.xy[1]), a: 1 });
+			setPreviewColor({ ...convertToRGB(light.state.xy[0], light.state.xy[1]), a: 1 });
 		} else {
 			setColor(null);
 		}
@@ -90,8 +92,12 @@ export default function Home() {
 			setBrightness(null);
 		}
 
-		if (hasCT(light)) { // not implemented
-			setTerperature(50);
+		if (hasCT(light)) {
+			const min = light.capabilities.control.ct.min;
+			const max = light.capabilities.control.ct.max;
+			const calclations = ((light.state.ct - min) * 100) / (max - min);
+
+			setTerperature(Math.floor(calclations));
 		} else {
 			setTerperature(null);
 		}
@@ -101,6 +107,8 @@ export default function Home() {
 		<React.Fragment>
 			<div className={styles.container}>
 				<SettingsHeader level={1}>Home</SettingsHeader>
+
+				<BridgeStatus />
 
 				<div className={styles.row}>
 					<SettingsHeader level={2} onClick={() => setScenesOpen(true)} >Scenes</SettingsHeader>
