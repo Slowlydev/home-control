@@ -1,6 +1,6 @@
 appId: com.slowlydev.home-control
 productName: home-control
-copyright: Copyright © 2022 Joel Scheffmann
+copyright: Copyright © 2022 Slowlydev
 directories:
   output: dist
   buildResources: resources
