@@ -26,6 +26,14 @@
   gap: 1rem;
 }
 
+.groups {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  gap: 1rem;
+}
+
 .modalContainer {
   display: flex;
   flex-direction: column;

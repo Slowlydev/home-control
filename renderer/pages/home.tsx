@@ -8,11 +8,13 @@ import styles from "./home.module.scss"
 
 import lightsService from "../services/lights.service";
 import scenesService from "../services/scenes.service";
+import groupService from "../services/group.service";
 
 import Light from "../components/Light/Light";
 import Modal from "../components/Modal/Modal";
 import LightCard from "../components/LightCard/LightCard";
 import SceneCard from "../components/SceneCard/SceneCard";
+import GroupCard from "../components/GroupCard/GroupCard";
 import BridgeStatus from "../components/BridgeStatus/BridgeStatus";
 import SettingsHeader from "../components/SettingsHeader/SettingsHeader";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
@@ -22,6 +24,7 @@ import TemperaturePicker from "../components/Pickers/TemperaturePicker";
 
 import LightInterface from "../interfaces/LightInterface";
 import SceneInterface from "../interfaces/SceneInterface";
+import GroupInterface from "../interfaces/GroupInterface";
 
 import convertToRGB from "../lib/convertToRGB";
 import convertToCIE from "../lib/convertToCIE";
@@ -33,6 +36,7 @@ const store = new Store();
 export default function Home() {
 	const { data: lightsData, isValidating: lightsDataLoading } = useSWR("lights", lightsService.getLights);
 	const { data: scenesData, isValidating: scenesDataLoading } = useSWR("scenes", scenesService.getDetailedScenes);
+	const { data: groupsData, isValidating: groupsDataLoading } = useSWR("groups", groupService.getDetailedGroups);
 
 	const [scenesOpen, setScenesOpen] = useState(false);
 
@@ -125,7 +129,20 @@ export default function Home() {
 				)}
 
 				<div className={styles.row}>
-					<SettingsHeader level={2}>Lights</SettingsHeader>
+					<SettingsHeader level={2}>Groups</SettingsHeader>
+					{groupsDataLoading && (<LoadingSpinner />)}
+				</div>
+
+				{groupsData !== undefined && (
+					<div className={styles.groups}>
+						{groupsData.map((group: GroupInterface, index: number) => (
+							<GroupCard group={group} key={`group.${index}.${group.id}`} />
+						))}
+					</div>
+				)}
+
+				<div className={styles.row}>
+					<SettingsHeader level={2}>All Lights</SettingsHeader>
 					{lightsDataLoading && (<LoadingSpinner />)}
 				</div>
 
