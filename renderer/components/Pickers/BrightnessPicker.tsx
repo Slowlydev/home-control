@@ -15,11 +15,12 @@ import { preParse } from "../../lib/preParse";
 interface BrightnessPickerProps {
 	color?: tinycolor.ColorFormats.RGBA,
 	brightness: number,
+	nolabel?: boolean,
 	onChange?: (value: number) => void,
 	onChangeDebounced?: (value: number) => void,
 }
 
-export default function BrightnessPicker({ color, brightness, onChange, onChangeDebounced }: BrightnessPickerProps) {
+export default function BrightnessPicker({ color, brightness, nolabel, onChange, onChangeDebounced }: BrightnessPickerProps) {
 
 	// IMPORTANT: always strip the alpha of the new color recived 
 
@@ -46,7 +47,7 @@ export default function BrightnessPicker({ color, brightness, onChange, onChange
 		<SSRProvider>
 			<Provider theme={theme} UNSAFE_style={{ background: 'none' }}>
 				<ColorSlider
-					label="Brightness"
+					label={nolabel ? null : "Brightness"}
 					channel="alpha"
 					value={currentColor}
 					onChange={customChange}
