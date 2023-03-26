@@ -2,7 +2,14 @@
 	"private": true,
 	"name": "home-control",
 	"version": "2.0.0",
-	"scripts": {},
+	"scripts": {
+		"turbo": "next dev --turbo",
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint",
+		"prettier": "prettier --write src"
+	},
 	"dependencies": {
 		"@react-aria/ssr": "3.5.0",
 		"@react-spectrum/color": "3.0.0-beta.20",
@@ -11,20 +18,25 @@
 		"@react-spectrum/theme-default": "3.5.0",
 		"@react-stately/color": "3.3.0",
 		"@react-types/color": "3.0.0-beta.15",
-		"react-colorful": "5.6.1",
-		"tinycolor2": "1.6.0",
-		"use-debouncy": "4.4.0",
+		"axios": "1.2.3",
+		"eslint": "8.36.0",
+		"eslint-config-next": "13.2.4",
+		"framer-motion": "10.9.1",
+		"next": "13.2.4",
 		"react": "18.2.0",
+		"react-colorful": "5.6.1",
 		"react-dom": "18.2.0",
 		"sass": "1.60.0",
 		"swr": "2.1.1",
-		"axios": "1.2.3",
-		"next": "13.2.4",
-		"framer-motion": "10.9.1"
+		"tinycolor2": "1.6.0",
+		"typescript": "5.0.2",
+		"use-debouncy": "4.4.0"
 	},
 	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "4.1.1",
 		"@types/node": "18.15.10",
 		"@types/react": "18.0.29",
-		"@types/tinycolor2": "1.4.3"
+		"@types/tinycolor2": "1.4.3",
+		"prettier": "2.8.7"
 	}
 }

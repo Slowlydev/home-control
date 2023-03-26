@@ -1,0 +1,66 @@
+.container {
+  margin: 2rem;
+  margin-bottom: 5rem;
+
+  .lights {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.scenes {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  gap: 1rem;
+}
+
+.groups {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  gap: 1rem;
+}
+
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  width: 15rem;
+
+  div {
+    width: 2rem;
+    height: 2rem;
+
+    border-radius: 50%;
+  }
+}
+
+.pickerWrapper {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.5rem;
+}
