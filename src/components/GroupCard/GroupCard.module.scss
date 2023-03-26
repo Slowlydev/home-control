@@ -2,62 +2,62 @@ $background: #111111;
 $foreground: #262626;
 
 .card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 
-  gap: 1rem;
+	gap: 1rem;
 
-  height: fit-content;
-  width: fit-content;
+	height: fit-content;
+	width: fit-content;
 
-  padding-right: 1rem;
-  border-right: #262626 2px solid;
+	padding-right: 1rem;
+	border-right: #262626 2px solid;
 
-  h3 {
-    margin: 0;
-  }
+	h3 {
+		margin: 0;
+	}
 
-  .groupActions {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+	.groupActions {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 
-    gap: 1rem;
+		gap: 1rem;
 
-    padding: 0.5rem;
-    border-radius: 1rem;
-    background-color: $foreground;
-  }
+		padding: 0.5rem;
+		border-radius: 1rem;
+		background-color: $foreground;
+	}
 
-  .lights {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+	.lights {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
 
-    gap: 1rem;
+		gap: 1rem;
 
-    p {
-      margin: 0;
-    }
+		p {
+			margin: 0;
+		}
 
-    .light {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+		.light {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
 
-      gap: 1rem;
+			gap: 1rem;
 
-      padding: 0.5rem;
-      padding-right: 1rem;
+			padding: 0.5rem;
+			padding-right: 1rem;
 
-      border-radius: 1rem;
-      background-color: $foreground;
-    }
-  }
+			border-radius: 1rem;
+			background-color: $foreground;
+		}
+	}
 
-  &:last-child {
-    border-right: none;
-  }
+	&:last-child {
+		border-right: none;
+	}
 }

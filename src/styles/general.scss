@@ -18,27 +18,27 @@ $int-green: #24ce65;
 
 body,
 html {
-  font-family: "Inter", sans-serif;
+	font-family: "Inter", sans-serif;
 
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 
-  background-color: $background;
-  color: #ffffff;
+	background-color: $background;
+	color: #ffffff;
 }
 
 button {
-  width: 10rem;
-  height: 2rem;
+	width: 10rem;
+	height: 2rem;
 
-  margin-top: 1rem;
-  margin-right: 1rem;
+	margin-top: 1rem;
+	margin-right: 1rem;
 
-  color: #ffffff;
+	color: #ffffff;
 
-  cursor: pointer;
+	cursor: pointer;
 
-  border: none;
-  border-radius: 0.7rem;
-  background-color: $foreground;
+	border: none;
+	border-radius: 0.7rem;
+	background-color: $foreground;
 }

@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import BridgeConfigInterface from "../interfaces/BridgeConfigInterface";
 import ClinetKeyInterface from "../interfaces/ClientKeyInterface";
-import axios from "axios";
 
 const store = { bridge: "", token: "" };
 

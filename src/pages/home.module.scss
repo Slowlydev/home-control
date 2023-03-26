@@ -1,66 +1,66 @@
 .container {
-  margin: 2rem;
-  margin-bottom: 5rem;
+	margin: 2rem;
+	margin-bottom: 5rem;
 
-  .lights {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+	.lights {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
 
-    gap: 1rem;
-  }
+		gap: 1rem;
+	}
 
-  .row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-  }
+	.row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
+	}
 }
 
 .scenes {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 
-  gap: 1rem;
+	gap: 1rem;
 }
 
 .groups {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 
-  gap: 1rem;
+	gap: 1rem;
 }
 
 .modalContainer {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 
-  width: 100%;
+	width: 100%;
 }
 
 .modalHeader {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 
-  gap: 0.5rem;
+	gap: 0.5rem;
 
-  width: 15rem;
+	width: 15rem;
 
-  div {
-    width: 2rem;
-    height: 2rem;
+	div {
+		width: 2rem;
+		height: 2rem;
 
-    border-radius: 50%;
-  }
+		border-radius: 50%;
+	}
 }
 
 .pickerWrapper {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 
-  gap: 0.5rem;
+	gap: 0.5rem;
 }

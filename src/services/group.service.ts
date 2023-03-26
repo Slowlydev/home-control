@@ -1,7 +1,8 @@
+import axios from "axios";
+
 import GroupInterface from "../interfaces/GroupInterface";
 import LightInterface from "../interfaces/LightInterface";
 import lightsService from "./lights.service";
-import axios from "axios";
 
 const store = { bridge: "", token: "" };
 

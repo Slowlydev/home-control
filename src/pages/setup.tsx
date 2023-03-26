@@ -1,12 +1,14 @@
+import Link from "next/link";
+import { useState } from "react";
+import useSWR from "swr";
+
+import styles from "./setup.module.scss";
+
 import BridgeStatus from "../components/BridgeStatus/BridgeStatus";
 import Button from "../components/Button/Button";
 import DiscoverdBidgeInterface from "../interfaces/DiscoveredBidgeInterface";
 import bridgeService from "../services/bridge.service";
 import discoveryService from "../services/discovery.service";
-import styles from "./setup.module.scss";
-import Link from "next/link";
-import { useState } from "react";
-import useSWR from "swr";
 
 export default function Setup() {
 	const { data, mutate } = useSWR<DiscoverdBidgeInterface[]>("discovery", discoveryService.discoverBidge);

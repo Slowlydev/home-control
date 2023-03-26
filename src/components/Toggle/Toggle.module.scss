@@ -15,30 +15,30 @@ $azure: #027fff;
 $int-green: #24ce65;
 
 .switch {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
 
-  width: 3rem;
-  height: 1.5rem;
+	width: 3rem;
+	height: 1.5rem;
 
-  cursor: pointer;
+	cursor: pointer;
 
-  &[data-ison="true"] {
-    justify-content: flex-end;
-    background-color: $int-green;
-  }
+	&[data-ison="true"] {
+		justify-content: flex-end;
+		background-color: $int-green;
+	}
 
-  border-radius: 10px;
-  border: 2px solid #b7b7b7;
-  background-color: #919191;
+	border-radius: 10px;
+	border: 2px solid #b7b7b7;
+	background-color: #919191;
 
-  .handle {
-    width: 1.5rem;
-    height: 1.5rem;
+	.handle {
+		width: 1.5rem;
+		height: 1.5rem;
 
-    border-radius: 8px;
+		border-radius: 8px;
 
-    background-color: #ffffff;
-  }
+		background-color: #ffffff;
+	}
 }

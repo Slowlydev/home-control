@@ -1,13 +1,13 @@
 .wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 
-  .dot {
-    height: 0.7rem;
-    width: 0.7rem;
+	.dot {
+		height: 0.7rem;
+		width: 0.7rem;
 
-    border-radius: 50%;
-    background-color: #ffffff;
-  }
+		border-radius: 50%;
+		background-color: #ffffff;
+	}
 }

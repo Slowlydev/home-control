@@ -1,5 +1,6 @@
-import LightInterface from "../interfaces/LightInterface";
 import axios from "axios";
+
+import LightInterface from "../interfaces/LightInterface";
 
 const store = { bridge: "", token: "" };
 

@@ -1,5 +1,5 @@
 export default interface DiscoverdBidgeInterface {
-  id: string;
-  internalipaddress: string;
-  port: string;
+	id: string;
+	internalipaddress: string;
+	port: string;
 }

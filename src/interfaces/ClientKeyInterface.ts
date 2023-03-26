@@ -1,4 +1,4 @@
 export default interface ClinetKeyInterface {
-  username: string;
-  clinetkey: string;
+	username: string;
+	clinetkey: string;
 }

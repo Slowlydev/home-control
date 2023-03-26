@@ -1,4 +1,3 @@
-import { bitsToPercent } from "../../lib/numberConverter";
 import { SSRProvider } from "@react-aria/ssr";
 import { ColorSlider } from "@react-spectrum/color";
 import { Provider } from "@react-spectrum/provider";
@@ -9,50 +8,34 @@ import React, { useEffect, useState } from "react";
 import tinycolor from "tinycolor2";
 import { useDebouncyEffect } from "use-debouncy";
 
+import { bitsToPercent } from "../../lib/numberConverter";
+
 interface TemperaturePickerProps {
-  teperature: number;
-  onChange?: (value: number) => void;
-  onChangeDebounced?: (value: number) => void;
+	teperature: number;
+	onChange?: (value: number) => void;
+	onChangeDebounced?: (value: number) => void;
 }
 
-export default function TemperaturePicker({
-  teperature,
-  onChange,
-  onChangeDebounced,
-}: TemperaturePickerProps) {
-  const [colorTemperature, setColorTemperature] = useState<Color>(
-    parseColor(tinycolor({ r: teperature, g: 127, b: 137 }).toHexString())
-  );
+export default function TemperaturePicker({ teperature, onChange, onChangeDebounced }: TemperaturePickerProps) {
+	const [colorTemperature, setColorTemperature] = useState<Color>(parseColor(tinycolor({ r: teperature, g: 127, b: 137 }).toHexString()));
 
-  if (onChange !== undefined) {
-    useEffect(
-      () => onChange(temperatureFormatter(colorTemperature)),
-      [colorTemperature]
-    );
-  }
-  if (onChangeDebounced !== undefined) {
-    useDebouncyEffect(
-      () => onChangeDebounced(temperatureFormatter(colorTemperature)),
-      200,
-      [colorTemperature]
-    );
-  }
+	if (onChange !== undefined) {
+		useEffect(() => onChange(temperatureFormatter(colorTemperature)), [colorTemperature]);
+	}
+	if (onChangeDebounced !== undefined) {
+		useDebouncyEffect(() => onChangeDebounced(temperatureFormatter(colorTemperature)), 200, [colorTemperature]);
+	}
 
-  function temperatureFormatter(color: Color): number {
-    const RGBcolor = tinycolor(color.toString("hexa")).toRgb(); // format number to RGB
-    return bitsToPercent(RGBcolor.r);
-  }
+	function temperatureFormatter(color: Color): number {
+		const RGBcolor = tinycolor(color.toString("hexa")).toRgb(); // format number to RGB
+		return bitsToPercent(RGBcolor.r);
+	}
 
-  return (
-    <SSRProvider>
-      <Provider theme={theme} UNSAFE_style={{ background: "none" }}>
-        <ColorSlider
-          label="Temperature"
-          channel="red"
-          value={colorTemperature}
-          onChange={setColorTemperature}
-        />
-      </Provider>
-    </SSRProvider>
-  );
+	return (
+		<SSRProvider>
+			<Provider theme={theme} UNSAFE_style={{ background: "none" }}>
+				<ColorSlider label="Temperature" channel="red" value={colorTemperature} onChange={setColorTemperature} />
+			</Provider>
+		</SSRProvider>
+	);
 }

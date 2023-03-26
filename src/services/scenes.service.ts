@@ -1,5 +1,6 @@
-import SceneInterface from "../interfaces/SceneInterface";
 import axios from "axios";
+
+import SceneInterface from "../interfaces/SceneInterface";
 
 const store = { bridge: "", token: "" };
 

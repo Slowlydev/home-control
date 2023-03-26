@@ -1,0 +1,20 @@
+{
+	"printWidth": 150,
+	"tabWidth": 2,
+	"useTabs": true,
+	"trailingComma": "all",
+	"singleQuote": false,
+	"semi": true,
+	"importOrder": [
+		"^@/styles/(.*)$",
+		"^(.*).module.scss$",
+		"^@/types/(.*)$",
+		"^@/services/(.*)$",
+		"^@/lib/(.*)$",
+		"^@/context/(.*)$",
+		"^@/components/(.*)$",
+		"^[./]"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true
+}
