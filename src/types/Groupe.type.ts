@@ -1,4 +1,4 @@
-import LightInterface from "./LightInterface";
+import LightInterface from "./Light.type";
 
 export default interface GroupInterface {
 	id?: string;

@@ -1,21 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import useSWR from "swr";
 
 import styles from "./setup.module.scss";
 
-import BridgeStatus from "../components/BridgeStatus/BridgeStatus";
-import Button from "../components/Button/Button";
-import DiscoverdBidgeInterface from "../interfaces/DiscoveredBidgeInterface";
-import bridgeService from "../services/bridge.service";
-import discoveryService from "../services/discovery.service";
+import DiscoverdBridgeInterface from "@/types/DiscoveredBridge.type";
+
+import bridgeService from "@/services/bridge.service";
+import discoveryService from "@/services/discovery.service";
+
+import BridgeStatus from "@/components/BridgeStatus/BridgeStatus";
+import Button from "@/components/Button/Button";
 
 export default function Setup() {
-	const { data, mutate } = useSWR<DiscoverdBidgeInterface[]>("discovery", discoveryService.discoverBidge);
+	const { data, mutate } = useSWR<DiscoverdBridgeInterface[]>("discovery", discoveryService.discoverBridge);
 
-	const [selectedBridge, setSelectedbridge] = useState<null | DiscoverdBidgeInterface>(null);
+	const [selectedBridge, setSelectedBridge] = useState<null | DiscoverdBridgeInterface>(null);
 	const [hasClientKey, setHasClientKey] = useState<boolean>(false);
-	const [step, setStep] = useState(1);
+	const [step, setStep] = useState<"start" | "cloud" | "discover" | "link" | "done">("start");
 
 	function startLinkProcess() {
 		let interval = setInterval(linkWithBridge, 2000);
@@ -23,7 +27,7 @@ export default function Setup() {
 		async function linkWithBridge() {
 			const data = await bridgeService.createClientKey();
 			if (data[0].success) {
-				//nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
+				// nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
 				// store.set("token", data[0].success.username);
 				setHasClientKey(true);
 				clearInterval(interval);
@@ -38,13 +42,24 @@ export default function Setup() {
 			</div>
 
 			<div className={styles.right}>
-				{step === 1 && (
+				{step === "start" && (
+					<div className={styles.content}>
+						<h2>Local or Cloud</h2>
+
+						<div className={styles.buttonContainer}>
+							<Button onClick={() => setStep("discover")}>Local</Button>
+							<Button onClick={() => setStep("cloud")}>Cloud</Button>
+						</div>
+					</div>
+				)}
+
+				{step === "discover" && (
 					<div className={styles.content}>
 						<h2>Discover Hue Bridge</h2>
 
 						{data !== undefined ? (
 							<div>
-								{data.map((bridge: DiscoverdBidgeInterface) => (
+								{data.map((bridge: DiscoverdBridgeInterface) => (
 									<div className={styles.bridge} key={bridge.id}>
 										<div>
 											<p>{bridge.id}</p>
@@ -53,7 +68,7 @@ export default function Setup() {
 											</p>
 										</div>
 
-										<input type="radio" onClick={() => setSelectedbridge(bridge)} />
+										<input type="radio" onClick={() => setSelectedBridge(bridge)} />
 									</div>
 								))}
 							</div>
@@ -63,16 +78,14 @@ export default function Setup() {
 
 						<div className={styles.buttonContainer}>
 							<Link href="/home">
-								<a>
-									<Button>Leave Setup</Button>
-								</a>
+								<Button>Leave Setup</Button>
 							</Link>
-							<Button onClick={() => mutate(discoveryService.discoverBidge)}>Reload</Button>
+							<Button onClick={() => mutate(discoveryService.discoverBridge)}>Reload</Button>
 
 							{selectedBridge && (
 								<Button
 									onClick={() => {
-										setStep(step + 1);
+										setStep("link");
 									}}
 								>
 									Next Step
@@ -84,32 +97,28 @@ export default function Setup() {
 					</div>
 				)}
 
-				{step === 2 && (
+				{step === "link" && (
 					<div className={styles.content}>
 						<h2>Connect with Bridge</h2>
 						<p>After u pressed start, u will have to press the link button on the bridge.</p>
 
 						<Link href="/home">
-							<a>
-								<Button>Leave Setup</Button>
-							</a>
+							<Button>Leave Setup</Button>
 						</Link>
 						<Button onClick={() => startLinkProcess()}>Start</Button>
 
-						{hasClientKey && <Button onClick={() => setStep(step + 1)}>Next Step</Button>}
+						{hasClientKey && <Button onClick={() => setStep("done")}>Next Step</Button>}
 					</div>
 				)}
 
-				{step === 3 && (
+				{step === "done" && (
 					<div className={styles.content}>
 						<h2>All done!</h2>
 						<p>Here u see the status of your hue bridge, if there are any red dots, please check your network connection or redo the setup</p>
 
 						<BridgeStatus />
 						<Link href="/home">
-							<a>
-								<Button>Finish Setup</Button>
-							</a>
+							<Button>Finish Setup</Button>
 						</Link>
 					</div>
 				)}

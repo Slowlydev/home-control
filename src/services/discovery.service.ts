@@ -1,11 +1,11 @@
 import axios from "axios";
 
-import DiscoverdBidgeInterface from "../interfaces/DiscoveredBidgeInterface";
+import DiscoverdBridgeInterface from "@/types/DiscoveredBridge.type";
 
-async function discoverBidge(): Promise<DiscoverdBidgeInterface[]> {
+async function discoverBridge(): Promise<DiscoverdBridgeInterface[]> {
 	return axios.get("https://discovery.meethue.com").then((res) => res.data);
 }
 
 export default {
-	discoverBidge,
+	discoverBridge,
 };
