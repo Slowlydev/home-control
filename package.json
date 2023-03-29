@@ -9,18 +9,20 @@
 		"build": "parcel build",
 		"prettier": "prettier --write src"
 	},
+	"dependencies": {
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"tinycolor2": "1.6.0"
+	},
 	"devDependencies": {
 		"@parcel/transformer-sass": "2.7.0",
 		"@tauri-apps/cli": "1.1.1",
 		"@trivago/prettier-plugin-sort-imports": "4.1.1",
 		"@types/react": "18.0.21",
 		"@types/react-dom": "18.0.6",
+		"@types/tinycolor2": "^1.4.3",
 		"parcel": "2.7.0",
-		"prettier": "^2.8.7",
+		"prettier": "2.8.7",
 		"process": "0.11.10"
-	},
-	"dependencies": {
-		"react": "18.2.0",
-		"react-dom": "18.2.0"
 	}
 }
