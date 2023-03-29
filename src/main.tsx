@@ -1,11 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
 import App from "./App";
-import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("app")!).render(
-	<React.StrictMode>
+// import "./index.css";
+
+const element = document.getElementById("app");
+
+if (!element) {
+	throw new Error("element with id app was not found");
+}
+
+createRoot(element).render(
+	<StrictMode>
 		<App />
-	</React.StrictMode>,
+	</StrictMode>,
 );
