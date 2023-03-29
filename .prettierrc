@@ -5,7 +5,15 @@
 	"trailingComma": "all",
 	"singleQuote": false,
 	"semi": true,
-	"importOrder": ["^@/styles/(.*)$", "^(.*).module.scss$", "^@/types/(.*)$", "^@/lib/(.*)$", "^@/context/(.*)$", "^@/components/(.*)$", "^[./]"],
+	"importOrder": [
+		"^(.*)/styles/(.*)$",
+		"^(.*).module.scss$",
+		"^(.*)/types/(.*)$",
+		"^(.*)/lib/(.*)$",
+		"^(.*)/context/(.*)$",
+		"^(.*)/components/(.*)$",
+		"^[./]"
+	],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true
 }

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 $background: #111111;
 $foreground: #262626;
@@ -14,17 +14,17 @@ $mahogany: #e94b1b;
 $avocado: #5f9800;
 $azure: #027fff;
 
-$int-green: #24CE65;
+$int-green: #24ce65;
 
 body,
 html {
-  font-family: 'Inter', sans-serif;
+	font-family: "Inter", sans-serif;
 
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 
-  background-color: $background;
-  color: #ffffff;
+	background-color: $background;
+	color: #ffffff;
 }
 
 button {
