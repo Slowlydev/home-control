@@ -1,5 +1,5 @@
-export default interface SceneInterface {
-	id?: string,
+export type SceneType = {
+	id?: string;
 	name: string;
 	type: string;
 	group: string;
@@ -7,38 +7,38 @@ export default interface SceneInterface {
 	owner: string;
 	recycle: boolean;
 	locked: boolean;
-	appdata: Appdata;
+	appdata: AppData;
 	picture: string;
 	lastupdated: string;
 	version: number;
-	lightstates: Lightstates;
-}
+	lightstates: LightStates;
+};
 
-interface Lightstates {
-	'1': _1;
-	'4': _4;
-	'5': _4;
-	'6': _6;
-}
+type LightStates = {
+	"1": _1;
+	"4": _4;
+	"5": _4;
+	"6": _6;
+};
 
-interface _6 {
+type _6 = {
 	on: boolean;
 	bri: number;
-}
+};
 
-interface _4 {
+type _4 = {
 	on: boolean;
 	bri: number;
 	xy: number[];
-}
+};
 
-interface _1 {
+type _1 = {
 	on: boolean;
 	bri: number;
 	ct: number;
-}
+};
 
-interface Appdata {
+type AppData = {
 	version: number;
 	data: string;
-}
+};

@@ -1,6 +1,6 @@
-export default interface LightInterface {
+export type LightType = {
 	// id: string,
-	// state: {
+	// state: = {
 	// 	on: boolean,
 	// 	bri: number,
 	// 	hue: number,
@@ -13,18 +13,18 @@ export default interface LightInterface {
 	// },
 	// name: string,
 	// modelid: string,
-	// capabilities: {
+	// capabilities: = {
 	// 	certified: boolean
-	// 	control: {
+	// 	control: = {
 	// 		maxlumen: number,
 	// 		mindimlevel?: number,
-	// 		ct?: {
+	// 		ct?: = {
 	// 			min: number,
 	// 			max: number
 	// 		},
 	// 		colorgamut?: number[][],
 	// 	},
-	// 	streaming: {
+	// 	streaming: = {
 	// 		renderer: boolean,
 	// 		proxy: boolean
 	// 	}
@@ -43,50 +43,50 @@ export default interface LightInterface {
 	swversion: string;
 	swconfigid: string;
 	productid: string;
-}
+};
 
-interface Config {
+type Config = {
 	archetype: string;
 	function: string;
 	direction: string;
 	startup: Startup;
-}
+};
 
-interface Startup {
+type Startup = {
 	mode: string;
 	configured: boolean;
-}
+};
 
-interface Capabilities {
+type Capabilities = {
 	certified: boolean;
 	control: Control;
 	streaming: Streaming;
-}
+};
 
-interface Streaming {
+type Streaming = {
 	renderer: boolean;
 	proxy: boolean;
-}
+};
 
-interface Control {
+type Control = {
 	mindimlevel: number;
 	maxlumen: number;
 	colorgamuttype: string;
 	colorgamut: number[][];
 	ct: Ct;
-}
+};
 
-interface Ct {
+type Ct = {
 	min: number;
 	max: number;
-}
+};
 
-interface Swupdate {
+type Swupdate = {
 	state: string;
 	lastinstall: string;
-}
+};
 
-interface State {
+type State = {
 	on: boolean;
 	bri: number;
 	hue: number;
@@ -98,4 +98,4 @@ interface State {
 	colormode: string;
 	mode: string;
 	reachable: boolean;
-}
+};

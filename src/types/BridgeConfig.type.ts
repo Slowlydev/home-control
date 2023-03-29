@@ -1,4 +1,4 @@
-export default interface BridgeConfigInterface {
+export type BridgeConfigType = {
 	name: string;
 	zigbeechannel: number;
 	bridgeid: string;
@@ -29,61 +29,61 @@ export default interface BridgeConfigInterface {
 	starterkitid: string;
 	whitelist: {
 		[key: string]: {
-			'last use date': string;
-			'create date': string;
+			"last use date": string;
+			"create date": string;
 			name: string;
-		}
-	}
-}
+		};
+	};
+};
 
-interface Backup {
+type Backup = {
 	status: string;
 	errorcode: number;
-}
+};
 
-interface Internetservices {
+type Internetservices = {
 	internet: string;
 	remoteaccess: string;
 	time: string;
 	swupdate: string;
-}
+};
 
-interface Portalstate {
+type Portalstate = {
 	signedon: boolean;
 	incoming: boolean;
 	outgoing: boolean;
 	communication: string;
-}
+};
 
-interface Swupdate2 {
+type Swupdate2 = {
 	checkforupdate: boolean;
 	lastchange: string;
 	bridge: Bridge;
 	state: string;
 	autoinstall: Autoinstall;
-}
+};
 
-interface Autoinstall {
+type Autoinstall = {
 	updatetime: string;
 	on: boolean;
-}
+};
 
-interface Bridge {
+type Bridge = {
 	state: string;
 	lastinstall: string;
-}
+};
 
-interface Swupdate {
+type Swupdate = {
 	updatestate: number;
 	checkforupdate: boolean;
 	devicetypes: Devicetypes;
 	url: string;
 	text: string;
 	notify: boolean;
-}
+};
 
-interface Devicetypes {
+type Devicetypes = {
 	bridge: boolean;
 	lights: any[];
 	sensors: any[];
-}
+};
