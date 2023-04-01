@@ -1,4 +1,4 @@
-export type ClinetKeyType = {
+export type ClientKeyType = {
 	username: string;
 	clinetkey: string;
 };
