@@ -1,0 +1,56 @@
+.card {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+
+	height: 4rem;
+	min-width: 13rem;
+	width: fit-content;
+
+	padding: 0.5rem;
+
+	border-radius: 1rem;
+	background-color: var(--foreground);
+
+	cursor: pointer;
+
+	p {
+		margin: 0;
+	}
+
+	.brightness {
+		opacity: 0.5;
+	}
+
+	.lightContainer {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 3.5rem;
+		height: 3.5rem;
+
+		border-radius: 1rem;
+
+		background-color: #242529;
+	}
+
+	.detailsContainer {
+		display: flex;
+		flex-direction: column;
+
+		gap: 0.5rem;
+
+		.infoContainer {
+			display: flex;
+			flex-direction: row;
+
+			gap: 0.5rem;
+
+			.status {
+				opacity: 0.5;
+			}
+		}
+	}
+}

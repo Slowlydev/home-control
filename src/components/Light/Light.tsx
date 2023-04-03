@@ -1,10 +1,10 @@
 import styles from "./Light.module.scss";
 
-interface LightProps {
-	isOn: boolean,
-	color: string,
-	customStyles?: React.CSSProperties,
-}
+type LightProps = {
+	isOn: boolean;
+	color: string;
+	customStyles?: React.CSSProperties;
+};
 
 export default function Light({ isOn, color, customStyles }: LightProps) {
 	return (
@@ -15,5 +15,5 @@ export default function Light({ isOn, color, customStyles }: LightProps) {
 				<div className={styles.light} style={{ backgroundColor: isOn ? color : "black" }} />
 			</div>
 		</div>
-	)
+	);
 }
