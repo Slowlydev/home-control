@@ -1,11 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import App from "./App";
 import "./styles/globals.scss";
 
-import App from "./App";
-
-const element = document.getElementById("app");
+const element = document.getElementById("root");
 
 if (!element) {
 	throw new Error("element with id app was not found");
