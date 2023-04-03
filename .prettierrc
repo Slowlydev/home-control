@@ -5,7 +5,7 @@
 	"trailingComma": "all",
 	"singleQuote": false,
 	"semi": true,
-	"importOrder": ["^(.*)/styles/(.*)$", "^(.*).module.scss$", "^(.*).type$", "^(.*)/lib/(.*)$", "^(.*).service$", "^(.*)/components/(.*)$", "^[./]"],
+	"importOrder": ["^@/styles/(.*)$", "^(.*).module.scss$", "^@/type$", "^@/lib/(.*)$", "^@.service$", "^@/components/(.*)$", "^[./]"],
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true
 }
