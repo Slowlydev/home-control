@@ -1,5 +1,5 @@
-$background: #111111;
-$foreground: #262626;
+var(--background): #111111;
+var(--foreground): #262626;
 
 .card {
 	display: flex;
@@ -27,7 +27,7 @@ $foreground: #262626;
 
 		padding: 0.5rem;
 		border-radius: 1rem;
-		background-color: $foreground;
+		background-color: var(--foreground);
 	}
 
 	.lights {
@@ -53,7 +53,7 @@ $foreground: #262626;
 			padding-right: 1rem;
 
 			border-radius: 1rem;
-			background-color: $foreground;
+			background-color: var(--foreground);
 		}
 	}
 

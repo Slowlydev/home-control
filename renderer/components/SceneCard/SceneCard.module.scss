@@ -1,20 +1,20 @@
-$background: #111111;
-$foreground: #262626;
+var(--background): #111111;
+var(--foreground): #262626;
 
 .card {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	
+
 	gap: 10px;
 
 	height: 4rem;
-	
+
 	padding-left: 1rem;
 	padding-right: 1rem;
-	
+
 	border-radius: 1rem;
-	background-color: $foreground;
+	background-color: var(--foreground);
 
 	cursor: pointer;
 
@@ -25,4 +25,3 @@ $foreground: #262626;
 		border-radius: 0.5rem;
 	}
 }
-

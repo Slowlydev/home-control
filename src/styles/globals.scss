@@ -1,20 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-$background: #111111;
-$foreground: #262626;
-
-$indigo: #622aff;
-$red: #e94256;
-$green: #0b9e43;
-$teal: #2294b1;
-$fuchsia: #dd04d1;
-$orange: #e2620c;
-$cornflower: #0e90db;
-$mahogany: #e94b1b;
-$avocado: #5f9800;
-$azure: #027fff;
-
-$int-green: #24ce65;
+:root {
+	--background: #0b0b0b;
+	--foreground: #151515;
+}
 
 body,
 html {
@@ -23,7 +12,7 @@ html {
 	margin: 0;
 	padding: 0;
 
-	background-color: $background;
+	background-color: var(--background);
 	color: #ffffff;
 }
 
@@ -40,5 +29,5 @@ button {
 
 	border: none;
 	border-radius: 0.7rem;
-	background-color: $foreground;
+	background-color: var(--foreground);
 }
