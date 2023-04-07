@@ -23,7 +23,7 @@
 			},
 			"externalBin": [],
 			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
-			"identifier": "com.tauri.dev",
+			"identifier": "home-control",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,
@@ -49,12 +49,18 @@
 		},
 		"windows": [
 			{
-				"fullscreen": false,
-				"height": 600,
-				"resizable": true,
 				"title": "home-control",
-				"width": 800
+				"fullscreen": false,
+				"resizable": true,
+				"width": 1000,
+				"height": 600
 			}
 		]
+	},
+	"plugins": {
+		"oauth": {
+			"ports": [5174],
+			"response": "<html><body>Hi i am a callback page</body></html>"
+		}
 	}
 }
