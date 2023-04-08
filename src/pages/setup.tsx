@@ -1,6 +1,9 @@
+import { Strategy } from "@/types/Strategy.type";
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/window";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 import styles from "./setup.module.scss";
 
@@ -9,8 +12,15 @@ import { env } from "@/lib/config";
 import { requestToken } from "@/services/account.service";
 
 import Button from "@/components/Button/Button";
+import DummyLightCard from "@/components/DummyLightCard";
+import CloudStrategy from "@/components/Strategy/CloudStrategy/CloudStrategy";
+import HybridStrategy from "@/components/Strategy/HybridStrategy/HybridStrategy";
+import LocalStrategy from "@/components/Strategy/LocalStrategy/LocalStrategy";
 
 export default function SetupPage() {
+	const [step, setStep] = useState<"intro" | "strategy" | "hybrid-intro" | "discover" | "login">("intro");
+	const [strategy, setStrategy] = useState<Strategy>(null);
+
 	const signInWithHueAccount = async () => {
 		const state: string = env.VITE_APP_HUE_STATE;
 
@@ -56,20 +66,117 @@ export default function SetupPage() {
 		const data = await requestToken(code);
 	};
 
+	const delay = (callback: () => void) => {
+		setTimeout(callback, 1000);
+	};
+
 	return (
 		<div className={styles.container}>
-			<div className={styles.left}>
-				<h1>Setup</h1>
-			</div>
+			<AnimatePresence>
+				{step === "intro" && (
+					<motion.div className={styles.intro} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="intro">
+						<h1>Welcome to home-control</h1>
 
-			<div className={styles.right}>
-				<div className={styles.content}>
-					<h2>Cloud Setup</h2>
-					<p>Here u can setup your hue bridge with the cloud</p>
+						<DummyLightCard onClick={() => delay(() => setStep("strategy"))} />
 
-					<Button onClick={signInWithHueAccount}>Sign in with Hue Account</Button>
-				</div>
-			</div>
+						<p className={styles.infoText}>turn on the light to start</p>
+					</motion.div>
+				)}
+
+				{step === "strategy" && (
+					<motion.div className={styles.strategyWrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="strategy">
+						<h1>Choose your home-control strategy</h1>
+
+						<div className={styles.strategyContainer}>
+							<div className={styles.strategy}>
+								<LocalStrategy />
+								<p className={styles.infoText}>home-control directly talks to your hue bridge over the local network</p>
+								<Button
+									onClick={() => {
+										setStrategy("local");
+										setStep("discover");
+									}}
+								>
+									Choose
+								</Button>
+							</div>
+
+							<div className={styles.strategy}>
+								<CloudStrategy />
+								<p className={styles.infoText}>home-control talks to your hue bridge through the Philips Hue servers using your linked hue account</p>
+								<Button
+									onClick={() => {
+										setStrategy("cloud");
+										setStep("login");
+									}}
+								>
+									Choose
+								</Button>
+							</div>
+
+							<div className={styles.strategy}>
+								<HybridStrategy />
+								<p className={styles.infoText}>home-control decides witch is better for the current situation</p>
+								<Button
+									onClick={() => {
+										setStrategy("hybrid");
+										setStep("hybrid-intro");
+									}}
+								>
+									Choose
+								</Button>
+							</div>
+						</div>
+					</motion.div>
+				)}
+
+				{step === "login" && (
+					<motion.div exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="login">
+						<div className={styles.left}>
+							<SelectedStrategy strategy={strategy} />
+						</div>
+
+						<div className={styles.right}>
+							<div className={styles.content}>
+								<h1>{strategy}</h1>
+								<p>Here u can setup your hue bridge with the cloud</p>
+
+								<Button onClick={signInWithHueAccount}>Sign in with Hue Account</Button>
+							</div>
+						</div>
+					</motion.div>
+				)}
+
+				{step === "hybrid-intro" && (
+					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="hybrid-intro">
+						<div className={styles.left}>
+							<SelectedStrategy strategy={strategy} />
+						</div>
+
+						<div className={styles.right}>
+							<h1>Hybrid strategy introduction</h1>
+							<p className={styles.infoText}>
+								Because the hybrid strategy utilizes both ways to talk to a hue bridge you will need to both link you hue bridge as well as login with
+								your philips hue account
+							</p>
+
+							<Button>Back</Button>
+							<Button>Next</Button>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }
+
+type SelectedStrategyProps = {
+	strategy: Strategy;
+};
+
+const SelectedStrategy = ({ strategy }: SelectedStrategyProps) => {
+	if (strategy === "cloud") return <CloudStrategy />;
+	if (strategy === "hybrid") return <HybridStrategy />;
+	if (strategy === "local") return <LocalStrategy />;
+	return <LocalStrategy />;
+};
