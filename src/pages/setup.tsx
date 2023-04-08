@@ -13,6 +13,7 @@ import { Strategy } from "@/types/Strategy.type";
 import { env } from "@/lib/config";
 
 import { requestToken } from "@/services/account.service";
+import { createClientKey } from "@/services/bridge.service";
 import { discoverBridge } from "@/services/discovery.service";
 
 import Button from "@/components/Button/Button";
@@ -87,6 +88,20 @@ export default function SetupPage() {
 		const bridges = await discoverBridge();
 		setBridges(bridges);
 		setStep("discover");
+	};
+
+	const startLinkProcess = () => {
+		const linkWithBridge = async () => {
+			const data = await createClientKey();
+			if (data[0].success) {
+				//nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
+				// store.set("token", data[0].success.username);
+				clearInterval(interval);
+				setLinked(true);
+			}
+		};
+
+		let interval = setInterval(linkWithBridge, 2000);
 	};
 
 	return (
@@ -249,7 +264,9 @@ export default function SetupPage() {
 							<h1>Link your Hue bridge with home-control</h1>
 							<p className={styles.infoText}>After u press “Link”, u will have to press the link button on the bridge</p>
 
-							<Button className={styles.loginButton}>Link</Button>
+							<Button className={styles.loginButton} onClick={() => startLinkProcess()}>
+								Link
+							</Button>
 
 							<div className={styles.buttons}>
 								<Button onClick={() => handleDiscoveryStep()}>Back</Button>
