@@ -2,15 +2,18 @@ import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/window";
 import classNames from "classnames";
+import { assert } from "console";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { Router, useNavigate } from "react-router-dom";
+import { Store } from "tauri-plugin-store-api";
 
 import styles from "./setup.module.scss";
 
 import { DiscoverdBridgeType } from "@/types/DiscoveredBridge.type";
 import { Strategy } from "@/types/Strategy.type";
 
-import { env } from "@/lib/config";
+import { env } from "@/lib/env";
 
 import { requestToken } from "@/services/account.service";
 import { createClientKey } from "@/services/bridge.service";
@@ -24,6 +27,8 @@ import LocalStrategy from "@/components/Strategy/LocalStrategy/LocalStrategy";
 
 import bridgeIcon from "@/assets/icons/bridge.svg";
 
+const store = new Store(".config.dat");
+
 export default function SetupPage() {
 	const [step, setStep] = useState<"intro" | "strategy" | "hybrid-intro" | "login" | "discover" | "link" | "done">("intro");
 	const [strategy, setStrategy] = useState<Strategy>(null);
@@ -31,6 +36,8 @@ export default function SetupPage() {
 	const [bridges, setBridges] = useState<DiscoverdBridgeType[]>([]);
 	const [selectedBridge, setSelectedBridge] = useState<null | DiscoverdBridgeType>(null);
 	const [linked, setLinked] = useState<boolean>(false);
+
+	const navigate = useNavigate();
 
 	const signInWithHueAccount = async () => {
 		const state: string = env.VITE_APP_HUE_STATE;
@@ -61,9 +68,7 @@ export default function SetupPage() {
 			const codeParam = url.searchParams.get("code");
 			const stateParam = url.searchParams.get("state");
 
-			if (state === stateParam) {
-				if (codeParam) requestTokenWithHueAccount(codeParam);
-			}
+			if (state === stateParam && codeParam) requestTokenWithHueAccount(codeParam);
 		});
 
 		accountWindow.listen("tauri://close-requested", async () => {
@@ -75,6 +80,9 @@ export default function SetupPage() {
 
 	const requestTokenWithHueAccount = async (code: string) => {
 		const data = await requestToken(code);
+		await store.set("access-token", data);
+
+		//setLoggedIn(true);
 	};
 
 	const delay = (callback: () => void) => {
@@ -94,14 +102,24 @@ export default function SetupPage() {
 		const linkWithBridge = async () => {
 			const data = await createClientKey();
 			if (data[0].success) {
-				//nookies.set(null, "key", data[0].success.username, { maxAge: 12 * 30 * 24 * 60 * 60, });
-				// store.set("token", data[0].success.username);
+				await store.set("local-token", data[0].success.username);
 				clearInterval(interval);
 				setLinked(true);
 			}
 		};
 
 		let interval = setInterval(linkWithBridge, 2000);
+	};
+
+	const handleFinishSetup = async () => {
+		await store.save();
+		navigate("/");
+	};
+
+	const handleStrategyChange = async (strategy: Strategy) => {
+		setStrategy(strategy);
+		await store.set("strategy", strategy);
+		await store.save();
 	};
 
 	return (
@@ -127,7 +145,7 @@ export default function SetupPage() {
 								<p className={styles.infoText}>home-control directly talks to your hue bridge over the local network</p>
 								<Button
 									onClick={() => {
-										setStrategy("local");
+										handleStrategyChange("local");
 										handleDiscoveryStep();
 									}}
 								>
@@ -140,7 +158,7 @@ export default function SetupPage() {
 								<p className={styles.infoText}>home-control talks to your hue bridge through the Philips Hue servers using your linked hue account</p>
 								<Button
 									onClick={() => {
-										setStrategy("cloud");
+										handleStrategyChange("cloud");
 										setStep("login");
 									}}
 								>
@@ -153,7 +171,7 @@ export default function SetupPage() {
 								<p className={styles.infoText}>home-control decides witch is better for the current situation</p>
 								<Button
 									onClick={() => {
-										setStrategy("hybrid");
+										handleStrategyChange("hybrid");
 										setStep("hybrid-intro");
 									}}
 								>
@@ -286,7 +304,7 @@ export default function SetupPage() {
 
 						<div className={classNames(styles.right, styles.content)}>
 							<h1>All done! Have fun using home-control</h1>
-							<Button>Finish Setup</Button>
+							<Button onClick={() => handleFinishSetup()}>Finish Setup</Button>
 						</div>
 					</motion.div>
 				)}

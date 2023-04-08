@@ -1,12 +1,47 @@
-import { z } from "zod";
+import { Store } from "tauri-plugin-store-api";
 
-let envSchema = z.object({
-	VITE_APP_CLIENT_ID: z.string().nonempty(),
-	VITE_APP_CLIENT_SECRET: z.string().nonempty(),
-	VITE_APP_CALLBACK_URL: z.string().nonempty(),
-	VITE_APP_HUE_STATE: z.string().nonempty(),
-});
+import { Strategy } from "@/types/Strategy.type";
+import { Token } from "@/types/Token.type";
 
-let env = envSchema.parse(import.meta.env);
+const store = new Store(".config.dat");
 
-export { env };
+export const checkConfig = async (): Promise<boolean> => {
+	const storeEntries = await store.entries();
+
+	console.log(storeEntries);
+
+	return false;
+};
+
+type Config = {
+	strategy: Strategy;
+	cloud: {
+		token: Token | null;
+		key: string | null;
+	};
+	local: {
+		bridge: string | null;
+		key: string | null;
+	};
+};
+
+export const loadConfig = async (): Promise<Config> => {
+	const strategy = await store.get<Strategy>("strategy");
+	const token = await store.get<Token>("access-token");
+
+	const cloudKey = await store.get<string>("cloud-key");
+	const localKey = await store.get<string>("local-key");
+	const localBridge = await store.get<string>("local-bridge");
+
+	return {
+		strategy,
+		cloud: {
+			token,
+			key: cloudKey,
+		},
+		local: {
+			bridge: localBridge,
+			key: localKey,
+		},
+	};
+};

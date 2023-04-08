@@ -1,34 +1,24 @@
-import { Token } from "@/types/Token.type";
 import axios from "axios";
 
-import { env } from "@/lib/config";
+import { loadConfig } from "@/lib/config";
+import { env } from "@/lib/env";
 
-type Store = {
-	strategy: "local" | "cloud" | "dynamic" | null;
-	local: {
-		bridge: string;
-		key: string;
-	} | null;
-	cloud: {
-		key: string;
-	} | null;
-	token: Token | null;
-};
+import { isLocalBridgeAvailable } from "./bridge.service";
 
-const store: Store = { strategy: null, local: null, cloud: null, token: null };
+const config = await loadConfig();
 
 export const localBridge = axios.create({
-	baseURL: `https://${store.local?.bridge}/clip/v2/`,
+	baseURL: `https://${config.local.bridge}/clip/v2/`,
 	headers: {
-		"hue-application-key": store.local?.key,
+		"hue-application-key": config.local.key,
 	},
 });
 
 export const cloudBridge = axios.create({
 	baseURL: `https://api.meethue.com/route/clip/v2/`,
 	headers: {
-		Authorization: `Bearer ${store.token?.access_token}`,
-		"hue-application-key": store.cloud?.key,
+		Authorization: `Bearer ${config.cloud.token?.access_token}`,
+		"hue-application-key": config.cloud.key,
 	},
 });
 
@@ -39,3 +29,13 @@ export const cloudToken = axios.create({
 		"Content-Type": "application/x-www-form-urlencoded",
 	},
 });
+
+export const dynamicAxios = async () => {
+	if (config.strategy === "local") return localBridge;
+	if (config.strategy === "cloud") return cloudBridge;
+	if (config.strategy === "hybrid") {
+		const localBridgeAvailable = await isLocalBridgeAvailable();
+
+		return localBridgeAvailable ? localBridge : cloudBridge;
+	}
+};
