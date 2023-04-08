@@ -1,0 +1,48 @@
+.wrapper {
+	position: absolute;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	height: 100vh;
+	width: 100%;
+
+	gap: 3rem;
+
+	padding: 1rem;
+
+	.container {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+
+		.strategy {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 1rem;
+
+			width: 18rem;
+
+			padding: 0 1rem;
+
+			border-right: 2px solid var(--foreground);
+
+			&:last-of-type {
+				border-right: none;
+			}
+
+			.infoText {
+				height: 3rem;
+			}
+		}
+	}
+}
+
+.infoText {
+	font-size: 13px;
+	opacity: 0.45;
+	text-align: center;
+}

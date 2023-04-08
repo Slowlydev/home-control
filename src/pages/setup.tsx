@@ -1,11 +1,7 @@
-import { invoke } from "@tauri-apps/api";
-import { listen } from "@tauri-apps/api/event";
-import { WebviewWindow } from "@tauri-apps/api/window";
 import classNames from "classnames";
-import { assert } from "console";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Router, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Store } from "tauri-plugin-store-api";
 
 import styles from "./setup.module.scss";
@@ -13,113 +9,40 @@ import styles from "./setup.module.scss";
 import { DiscoverdBridgeType } from "@/types/DiscoveredBridge.type";
 import { Strategy } from "@/types/Strategy.type";
 
-import { env } from "@/lib/env";
-
-import { requestToken } from "@/services/account.service";
-import { createClientKey } from "@/services/bridge.service";
 import { discoverBridge } from "@/services/discovery.service";
 
 import Button from "@/components/Button/Button";
 import DummyLightCard from "@/components/DummyLightCard";
-import CloudStrategy from "@/components/Strategy/CloudStrategy/CloudStrategy";
-import HybridStrategy from "@/components/Strategy/HybridStrategy/HybridStrategy";
-import LocalStrategy from "@/components/Strategy/LocalStrategy/LocalStrategy";
-
-import bridgeIcon from "@/assets/icons/bridge.svg";
+import BridgeSelection from "@/components/Setup/BridgeSelection/BridgeSelection";
+import LinkBridge from "@/components/Setup/LinkBridge/LinkBridge";
+import Login from "@/components/Setup/Login/Login";
+import CloudStrategy from "@/components/Setup/Strategy/CloudStrategy/CloudStrategy";
+import HybridStrategy from "@/components/Setup/Strategy/HybridStrategy/HybridStrategy";
+import LocalStrategy from "@/components/Setup/Strategy/LocalStrategy/LocalStrategy";
+import StrategySelection from "@/components/Setup/StrategySelection/StrategySelection";
 
 const store = new Store(".config.dat");
 
 export default function SetupPage() {
 	const [step, setStep] = useState<"intro" | "strategy" | "hybrid-intro" | "login" | "discover" | "link" | "done">("intro");
 	const [strategy, setStrategy] = useState<Strategy>(null);
-	const [loggedIn, setLoggedIn] = useState<boolean>(false);
 	const [bridges, setBridges] = useState<DiscoverdBridgeType[]>([]);
-	const [selectedBridge, setSelectedBridge] = useState<null | DiscoverdBridgeType>(null);
-	const [linked, setLinked] = useState<boolean>(false);
 
 	const navigate = useNavigate();
-
-	const signInWithHueAccount = async () => {
-		const state: string = env.VITE_APP_HUE_STATE;
-
-		const port: number = await invoke("plugin:oauth|start");
-
-		const accountWindow = new WebviewWindow("hue-account-callback", {
-			url: `https://api.meethue.com/v2/oauth2/authorize?client_id=yXJ5rxr1AB4eUvdb9Vpk6diSAFs0zXAb&response_type=code&state=${state}`,
-			title: "Sign in with Hue Account",
-			alwaysOnTop: true,
-			resizable: false,
-			center: true,
-			focus: true,
-			visible: true,
-		});
-
-		const unListenError = await listen("oauth://invalid-url", (event) => {
-			// TODO: Add error handling
-			console.error(event);
-		});
-
-		const unListenUrl = await listen("oauth://url", async ({ payload }: { payload: string }) => {
-			await accountWindow.close();
-
-			const url = new URL(payload);
-
-			// const pkceParam = url.searchParams.get("pkce");
-			const codeParam = url.searchParams.get("code");
-			const stateParam = url.searchParams.get("state");
-
-			if (state === stateParam && codeParam) requestTokenWithHueAccount(codeParam);
-		});
-
-		accountWindow.listen("tauri://close-requested", async () => {
-			await invoke("plugin:oauth|cancel", { port });
-			unListenError();
-			unListenUrl();
-		});
-	};
-
-	const requestTokenWithHueAccount = async (code: string) => {
-		const data = await requestToken(code);
-		await store.set("access-token", data);
-
-		//setLoggedIn(true);
-	};
 
 	const delay = (callback: () => void) => {
 		setTimeout(callback, 1000);
 	};
 
 	const handleDiscoveryStep = async () => {
-		// const bridges = await invoke("plugin:discover|discover");
-		// setDiscoverdBridges(bridges);
-
 		const bridges = await discoverBridge();
 		setBridges(bridges);
 		setStep("discover");
 	};
 
-	const startLinkProcess = () => {
-		const linkWithBridge = async () => {
-			const data = await createClientKey();
-			if (data[0].success) {
-				await store.set("local-token", data[0].success.username);
-				clearInterval(interval);
-				setLinked(true);
-			}
-		};
-
-		let interval = setInterval(linkWithBridge, 2000);
-	};
-
 	const handleFinishSetup = async () => {
 		await store.save();
 		navigate("/");
-	};
-
-	const handleStrategyChange = async (strategy: Strategy) => {
-		setStrategy(strategy);
-		await store.set("strategy", strategy);
-		await store.save();
 	};
 
 	return (
@@ -135,166 +58,13 @@ export default function SetupPage() {
 					</motion.div>
 				)}
 
-				{step === "strategy" && (
-					<motion.div className={styles.strategyWrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="strategy">
-						<h1>Choose your home-control strategy</h1>
+				{step === "strategy" && <StrategySelection handleStrategyChange={() => {}} />}
 
-						<div className={styles.strategyContainer}>
-							<div className={styles.strategy}>
-								<LocalStrategy />
-								<p className={styles.infoText}>home-control directly talks to your hue bridge over the local network</p>
-								<Button
-									onClick={() => {
-										handleStrategyChange("local");
-										handleDiscoveryStep();
-									}}
-								>
-									Choose
-								</Button>
-							</div>
+				{step === "login" && <Login next={() => {}} back={() => {}} />}
 
-							<div className={styles.strategy}>
-								<CloudStrategy />
-								<p className={styles.infoText}>home-control talks to your hue bridge through the Philips Hue servers using your linked hue account</p>
-								<Button
-									onClick={() => {
-										handleStrategyChange("cloud");
-										setStep("login");
-									}}
-								>
-									Choose
-								</Button>
-							</div>
+				{step === "discover" && <BridgeSelection next={() => {}} back={() => {}} bridges={bridges} />}
 
-							<div className={styles.strategy}>
-								<HybridStrategy />
-								<p className={styles.infoText}>home-control decides witch is better for the current situation</p>
-								<Button
-									onClick={() => {
-										handleStrategyChange("hybrid");
-										setStep("hybrid-intro");
-									}}
-								>
-									Choose
-								</Button>
-							</div>
-						</div>
-					</motion.div>
-				)}
-
-				{step === "hybrid-intro" && (
-					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="hybrid-intro">
-						<div className={styles.left}>
-							<SelectedStrategy strategy={strategy} />
-						</div>
-
-						<div className={classNames(styles.right, styles.content)}>
-							<h1>Hybrid strategy introduction</h1>
-							<p className={styles.infoText}>
-								Because the hybrid strategy utilizes both ways to talk to a hue bridge you will need to both link you hue bridge as well as login with
-								your philips hue account
-							</p>
-
-							<div className={styles.buttons}>
-								<Button onClick={() => setStep("strategy")}>Back</Button>
-								<Button onClick={() => setStep("login")}>Next</Button>
-							</div>
-						</div>
-					</motion.div>
-				)}
-
-				{step === "login" && (
-					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="login">
-						<div className={styles.left}>
-							<SelectedStrategy strategy={strategy} />
-						</div>
-
-						<div className={classNames(styles.right, styles.content)}>
-							<h1>Login with Philips Hue Account</h1>
-							<p className={styles.infoText}>
-								After u press “login”, u will be prompted to login with you philips hue account and to allow home-control to access your hue bridge
-							</p>
-
-							<Button className={styles.loginButton} onClick={signInWithHueAccount}>
-								Login
-							</Button>
-
-							<div className={styles.buttons}>
-								<Button onClick={() => setStep(strategy === "hybrid" ? "hybrid-intro" : "strategy")}>Back</Button>
-								<Button onClick={() => setStep("login")} disabled={!loggedIn}>
-									Next
-								</Button>
-							</div>
-						</div>
-					</motion.div>
-				)}
-
-				{step === "discover" && (
-					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="discover">
-						<div className={styles.left}>
-							<SelectedStrategy strategy={strategy} />
-						</div>
-
-						<div className={classNames(styles.right, styles.content)}>
-							<h1>Select your hue bridge you want to connect</h1>
-
-							{/* TODO add error/loading/empty handling */}
-
-							<div className={styles.bridges}>
-								{bridges.map((bridge) => (
-									<div className={styles.bridge} key={bridge.id}>
-										<img src={bridgeIcon} />
-
-										<div>
-											<p>{bridge.id}</p>
-											<p className={styles.infoText}>
-												{bridge.internalipaddress}:{bridge.port}
-											</p>
-										</div>
-
-										<input
-											type="checkbox"
-											checked={selectedBridge?.id === bridge.id}
-											className={styles.checkbox}
-											onClick={() => setSelectedBridge(bridge)}
-										/>
-									</div>
-								))}
-							</div>
-
-							<div className={styles.buttons}>
-								<Button onClick={() => setStep("strategy")}>Back</Button>
-								<Button onClick={() => setStep("link")} disabled={!selectedBridge}>
-									Next
-								</Button>
-							</div>
-						</div>
-					</motion.div>
-				)}
-
-				{step === "link" && (
-					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="link">
-						<div className={styles.left}>
-							<SelectedStrategy strategy={strategy} />
-						</div>
-
-						<div className={classNames(styles.right, styles.content)}>
-							<h1>Link your Hue bridge with home-control</h1>
-							<p className={styles.infoText}>After u press “Link”, u will have to press the link button on the bridge</p>
-
-							<Button className={styles.loginButton} onClick={() => startLinkProcess()}>
-								Link
-							</Button>
-
-							<div className={styles.buttons}>
-								<Button onClick={() => handleDiscoveryStep()}>Back</Button>
-								<Button onClick={() => setStep("done")} disabled={!linked}>
-									Next
-								</Button>
-							</div>
-						</div>
-					</motion.div>
-				)}
+				{step === "link" && <LinkBridge next={() => {}} back={() => {}} selectedBridge={bridges[0]} />}
 
 				{step === "done" && (
 					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="done">
