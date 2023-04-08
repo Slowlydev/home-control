@@ -1,0 +1,25 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	gap: 0.5rem;
+
+	.bridge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 3.5rem;
+		height: 3.5rem;
+
+		border-radius: 1rem;
+
+		background-color: var(--foreground);
+	}
+
+	.logo {
+		width: 4rem;
+		height: 4rem;
+	}
+}
