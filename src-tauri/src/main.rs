@@ -3,11 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use tauri_plugin_oauth;
-
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_oauth::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
