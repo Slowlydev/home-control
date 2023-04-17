@@ -1,10 +1,10 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/window";
-import classNames from "classnames";
 import { useState } from "react";
 import { Store } from "tauri-plugin-store-api";
 
+import commonStyles from "../common-setup.module.scss";
 import styles from "./Login.module.scss";
 
 import { env } from "@/lib/env";
@@ -66,13 +66,14 @@ export default function Login({ next, back }: Props) {
 		const data = await requestToken(code);
 		await store.set("access-token", data);
 
+		// TODO auth with bridge over cloud
 		//setLoggedIn(true);
 	};
 
 	return (
-		<div className={classNames(styles.right, styles.content)}>
+		<>
 			<h1>Login with Philips Hue Account</h1>
-			<p className={styles.infoText}>
+			<p className={commonStyles.infoText}>
 				After u press “login”, u will be prompted to login with you philips hue account and to allow home-control to access your hue bridge
 			</p>
 
@@ -80,12 +81,12 @@ export default function Login({ next, back }: Props) {
 				Login
 			</Button>
 
-			<div className={styles.buttons}>
+			<div className={commonStyles.buttons}>
 				<Button onClick={() => back()}>Back</Button>
 				<Button onClick={() => next()} disabled={!loggedIn}>
 					Next
 				</Button>
 			</div>
-		</div>
+		</>
 	);
 }

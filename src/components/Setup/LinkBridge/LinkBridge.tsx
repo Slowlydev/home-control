@@ -13,7 +13,7 @@ import Button from "@/components/Button/Button";
 type Props = {
 	next: () => void;
 	back: () => void;
-	selectedBridge: DiscoverdBridgeType;
+	selectedBridge: DiscoverdBridgeType | null;
 };
 
 const store = new Store(".config.dat");
@@ -35,11 +35,11 @@ export default function LinkBridge({ next, back, selectedBridge }: Props) {
 	};
 
 	return (
-		<div className={classNames(styles.right, styles.content)}>
+		<>
 			<h1>Link your Hue bridge with home-control</h1>
 			<p className={styles.infoText}>After u press “Link”, u will have to press the link button on the bridge</p>
 
-			<Button className={styles.loginButton} onClick={() => startLinkProcess()}>
+			<Button className={styles.linkButton} onClick={() => startLinkProcess()}>
 				Link
 			</Button>
 
@@ -49,6 +49,6 @@ export default function LinkBridge({ next, back, selectedBridge }: Props) {
 					Next
 				</Button>
 			</div>
-		</div>
+		</>
 	);
 }

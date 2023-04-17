@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Store } from "tauri-plugin-store-api";
 
@@ -8,8 +8,6 @@ import styles from "./setup.module.scss";
 
 import { DiscoverdBridgeType } from "@/types/DiscoveredBridge.type";
 import { Strategy } from "@/types/Strategy.type";
-
-import { discoverBridge } from "@/services/discovery.service";
 
 import Button from "@/components/Button/Button";
 import DummyLightCard from "@/components/DummyLightCard";
@@ -23,21 +21,40 @@ import StrategySelection from "@/components/Setup/StrategySelection/StrategySele
 
 const store = new Store(".config.dat");
 
+type Step = {
+	strategy: Strategy;
+	content: JSX.Element;
+	before?: () => void;
+};
+
 export default function SetupPage() {
-	const [step, setStep] = useState<"intro" | "strategy" | "hybrid-intro" | "login" | "discover" | "link" | "done">("intro");
+	const [step, setStep] = useState<number>(0);
 	const [strategy, setStrategy] = useState<Strategy>(null);
-	const [bridges, setBridges] = useState<DiscoverdBridgeType[]>([]);
+	const [selectedBridge, setSelectedBridge] = useState<DiscoverdBridgeType | null>(null);
 
 	const navigate = useNavigate();
 
-	const delay = (callback: () => void) => {
-		setTimeout(callback, 1000);
+	const handleStrategyChange = (strategy: Strategy) => {
+		setStrategy(strategy);
+		nextStep();
 	};
 
-	const handleDiscoveryStep = async () => {
-		const bridges = await discoverBridge();
-		setBridges(bridges);
-		setStep("discover");
+	const nextStep = async () => {
+		const nextStepIndex = step + 1;
+		const beforeFunction = filteredSteps[nextStepIndex].before;
+		if (beforeFunction) await beforeFunction();
+		setStep(nextStepIndex);
+	};
+
+	const previousStep = async () => {
+		const previousStepIndex = step - 1;
+		const beforeFunction = filteredSteps[previousStepIndex].before;
+		if (beforeFunction) await beforeFunction();
+		setStep(previousStepIndex);
+	};
+
+	const delay = (callback: () => void) => {
+		setTimeout(callback, 1000);
 	};
 
 	const handleFinishSetup = async () => {
@@ -45,39 +62,83 @@ export default function SetupPage() {
 		navigate("/");
 	};
 
+	const steps: (Step | Step[])[] = [
+		{
+			strategy: null,
+			content: (
+				<>
+					<h1>Welcome to home-control</h1>
+					<DummyLightCard onClick={() => delay(() => nextStep())} />
+					<p className={styles.infoText}>turn on the light to start</p>
+				</>
+			),
+		},
+		{
+			strategy: null,
+			content: <StrategySelection handleStrategyChange={handleStrategyChange} />,
+			before: () => setStrategy(null),
+		},
+		[
+			{
+				strategy: "local",
+				content: <BridgeSelection next={nextStep} back={previousStep} onSelectedBridge={setSelectedBridge} />,
+			},
+			{
+				strategy: "local",
+				content: <LinkBridge next={nextStep} back={previousStep} selectedBridge={selectedBridge} />,
+			},
+		],
+		[
+			{
+				strategy: "cloud",
+				content: <Login next={nextStep} back={previousStep} />,
+			},
+		],
+		[
+			{
+				strategy: "hybrid",
+				content: <BridgeSelection next={nextStep} back={previousStep} onSelectedBridge={setSelectedBridge} />,
+			},
+			{
+				strategy: "hybrid",
+				content: <Login next={nextStep} back={previousStep} />,
+			},
+		],
+		{
+			strategy: null,
+			content: (
+				<>
+					<h1>All done! Have fun using home-control</h1>
+					<Button onClick={() => handleFinishSetup()}>Finish Setup</Button>
+				</>
+			),
+		},
+	];
+
+	const filterSteps = (step: Step) => step.strategy === strategy || step.strategy === null;
+
+	const filteredSteps = steps.flat().filter(filterSteps);
+
 	return (
 		<div className={styles.container}>
 			<AnimatePresence>
-				{step === "intro" && (
-					<motion.div className={styles.intro} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="intro">
-						<h1>Welcome to home-control</h1>
-
-						<DummyLightCard onClick={() => delay(() => setStep("strategy"))} />
-
-						<p className={styles.infoText}>turn on the light to start</p>
-					</motion.div>
+				{!!strategy && (
+					<div className={styles.left}>
+						<SelectedStrategy strategy={strategy} />
+					</div>
 				)}
 
-				{step === "strategy" && <StrategySelection handleStrategyChange={() => {}} />}
-
-				{step === "login" && <Login next={() => {}} back={() => {}} />}
-
-				{step === "discover" && <BridgeSelection next={() => {}} back={() => {}} bridges={bridges} />}
-
-				{step === "link" && <LinkBridge next={() => {}} back={() => {}} selectedBridge={bridges[0]} />}
-
-				{step === "done" && (
-					<motion.div className={styles.wrapper} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="done">
-						<div className={styles.left}>
-							<SelectedStrategy strategy={strategy} />
-						</div>
-
-						<div className={classNames(styles.right, styles.content)}>
-							<h1>All done! Have fun using home-control</h1>
-							<Button onClick={() => handleFinishSetup()}>Finish Setup</Button>
-						</div>
-					</motion.div>
-				)}
+				<div className={classNames(styles.wrapper, { [styles.right]: !!strategy })}>
+					<AnimatePresence>
+						{filteredSteps.map((filteredStep, index) =>
+							step === index ? (
+								<motion.div key={`step.${index}`} className={styles.content} exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+									{filteredStep.content}
+								</motion.div>
+							) : null,
+						)}
+					</AnimatePresence>
+				</div>
 			</AnimatePresence>
 		</div>
 	);

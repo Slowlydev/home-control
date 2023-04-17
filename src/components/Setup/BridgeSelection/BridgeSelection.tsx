@@ -1,9 +1,11 @@
-import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import commonStyles from "../common-setup.module.scss";
 import styles from "./BridgeSelection.module.scss";
 
 import { DiscoverdBridgeType } from "@/types/DiscoveredBridge.type";
+
+import { discoverBridge } from "@/services/discovery.service";
 
 import Button from "@/components/Button/Button";
 
@@ -12,28 +14,54 @@ import bridgeIcon from "@/assets/icons/bridge.svg";
 type Props = {
 	next: () => void;
 	back: () => void;
-	bridges: DiscoverdBridgeType[];
+	onSelectedBridge: (bridge: DiscoverdBridgeType) => void;
 };
 
-export default function BridgeSelection({ next, back, bridges }: Props) {
+export default function BridgeSelection({ next, back }: Props) {
+	const [bridges, setBridges] = useState<DiscoverdBridgeType[]>([]);
 	const [selectedBridge, setSelectedBridge] = useState<null | DiscoverdBridgeType>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(false);
+
+	useEffect(() => {
+		const loadBridges = async () => {
+			setLoading(true);
+
+			try {
+				const bridges = await discoverBridge();
+				setBridges(bridges);
+			} catch (_) {
+				setError(true);
+			}
+
+			setLoading(false);
+		};
+
+		loadBridges();
+	}, []);
 
 	return (
-		<div className={classNames(styles.right, styles.content)}>
+		<>
 			<h1>Select your hue bridge you want to connect</h1>
 
-			{/* TODO add error/loading/empty handling */}
+			{!loading && !error && bridges.length < 1 && <p>No bridge found</p>}
+			{loading && !error && <p>loading...</p>}
+			{error && !loading && <p>an error occured</p>}
+
+			{/* TODO prettier error handling */}
 
 			<div className={styles.bridges}>
-				{bridges.map((bridge) => (
-					<div className={styles.bridge} key={bridge.id}>
-						<img src={bridgeIcon} />
-
+				{bridges.map((bridge, index) => (
+					<div className={styles.bridge} key={`selection.bridge.${index}.${bridge.id}`}>
 						<div>
-							<p>{bridge.id}</p>
-							<p className={styles.infoText}>
-								{bridge.internalipaddress}:{bridge.port}
-							</p>
+							<img src={bridgeIcon} />
+
+							<div>
+								<p>{bridge.id}</p>
+								<p className={styles.infoText}>
+									{bridge.internalipaddress}:{bridge.port}
+								</p>
+							</div>
 						</div>
 
 						<input type="checkbox" checked={selectedBridge?.id === bridge.id} className={styles.checkbox} onClick={() => setSelectedBridge(bridge)} />
@@ -41,12 +69,12 @@ export default function BridgeSelection({ next, back, bridges }: Props) {
 				))}
 			</div>
 
-			<div className={styles.buttons}>
+			<div className={commonStyles.buttons}>
 				<Button onClick={() => back()}>Back</Button>
 				<Button onClick={() => next()} disabled={!selectedBridge}>
 					Next
 				</Button>
 			</div>
-		</div>
+		</>
 	);
 }
