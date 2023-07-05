@@ -23,7 +23,7 @@ export const cloudBridge = axios.create({
 });
 
 export const cloudToken = axios.create({
-	url: "https://api.meethue.com/v2/oauth2/token",
+	baseURL: "https://api.meethue.com/v2/",
 	headers: {
 		Authorization: `Basic ${btoa(`${env.VITE_APP_CLIENT_ID}:${env.VITE_APP_CLIENT_SECRET}`)}`,
 		"Content-Type": "application/x-www-form-urlencoded",
@@ -38,4 +38,5 @@ export const dynamicAxios = async () => {
 
 		return localBridgeAvailable ? localBridge : cloudBridge;
 	}
+	return localBridge;
 };

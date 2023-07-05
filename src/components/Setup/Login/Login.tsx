@@ -7,9 +7,12 @@ import { Store } from "tauri-plugin-store-api";
 import commonStyles from "../common-setup.module.scss";
 import styles from "./Login.module.scss";
 
+import { DiscoverdBridgeType } from "@/types/DiscoveredBridge.type";
+
 import { env } from "@/lib/env";
 
 import { requestToken } from "@/services/account.service";
+import { createCloudKey, putLinkButton } from "@/services/bridge.service";
 
 import Button from "@/components/Button/Button";
 
@@ -18,9 +21,10 @@ const store = new Store(".config.dat");
 type Props = {
 	next: () => void;
 	back: () => void;
+	selectedBridge?: DiscoverdBridgeType;
 };
 
-export default function Login({ next, back }: Props) {
+export default function Login({ next, back, selectedBridge }: Props) {
 	const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
 	const signInWithHueAccount = async () => {
@@ -65,6 +69,11 @@ export default function Login({ next, back }: Props) {
 	const requestTokenWithHueAccount = async (code: string) => {
 		const data = await requestToken(code);
 		await store.set("access-token", data);
+
+		await putLinkButton();
+		const cloudKey = await createCloudKey();
+
+		await store.set("cloud-key", cloudKey[0].success.username);
 
 		// TODO auth with bridge over cloud
 		//setLoggedIn(true);

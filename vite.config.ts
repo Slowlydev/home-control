@@ -10,6 +10,16 @@ export default defineConfig({
 	// Tauri expects a fixed port, fail if that port is not available
 	server: {
 		strictPort: true,
+		// proxy: {
+		// 	"/meet-hue/": {
+		// 		target: "https://api.meethue.com/v2/",
+		// 		changeOrigin: true,
+		// 		secure: false,
+		// 		headers: {
+		// 			"Access-Control-Allow-Origin": "*",
+		// 		},
+		// 	},
+		// },
 	},
 	// to make use of `TAURI_PLATFORM`, `TAURI_ARCH`, `TAURI_FAMILY`,
 	// `TAURI_PLATFORM_VERSION`, `TAURI_PLATFORM_TYPE` and `TAURI_DEBUG`
